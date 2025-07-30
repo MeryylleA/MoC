@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LunarisCodex-MoC - Evolving Mixture of Experts through Collaboration</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'dark-bg': '#1a202c',
+                        'dark-card': '#2d3748',
+                        'accent-blue': '#4299e1',
+                        'accent-green': '#48bb78',
+                        'accent-orange': '#ed8936',
+                        'text-primary': '#f7fafc',
+                        'text-secondary': '#e2e8f0'
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .svg-animate {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .code-block {
+            background: #1a202c;
+            border: 1px solid #4a5568;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        .accent-line {
+            background: linear-gradient(90deg, #4299e1, #48bb78);
+            height: 3px;
+            width: 60px;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body class="bg-dark-bg text-text-primary font-sans">
+    <!-- Header/Navbar -->
+    <header class="fixed top-0 w-full bg-dark-bg/90 backdrop-blur-sm z-50 border-b border-gray-700">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-xl font-mono font-bold text-accent-blue">LunarisCodex-MoC</div>
+            <div class="hidden md:flex space-x-8">
+                <a href="#overview" class="text-text-secondary hover:text-accent-blue transition-colors">Overview</a>
+                <a href="#architecture" class="text-text-secondary hover:text-accent-blue transition-colors">Architecture</a>
+                <a href="#analysis" class="text-text-secondary hover:text-accent-blue transition-colors">Analysis</a>
+                <a href="#code" class="text-text-secondary hover:text-accent-blue transition-colors">Code</a>
+            </div>
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-text-secondary">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="fixed inset-0 bg-dark-bg z-40 hidden">
+        <div class="flex flex-col items-center justify-center h-full space-y-8">
+            <a href="#overview" class="text-2xl text-text-secondary hover:text-accent-blue transition-colors">Overview</a>
+            <a href="#architecture" class="text-2xl text-text-secondary hover:text-accent-blue transition-colors">Architecture</a>
+            <a href="#analysis" class="text-2xl text-text-secondary hover:text-accent-blue transition-colors">Analysis</a>
+            <a href="#code" class="text-2xl text-text-secondary hover:text-accent-blue transition-colors">Code</a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center justify-center pt-20">
+        <div class="container mx-auto px-6 text-center">
+            <h1 class="text-5xl md:text-7xl font-mono font-bold mb-4 fade-in">
+                <span class="text-accent-blue">LunarisCodex</span>-MoC
+            </h1>
+            <p class="text-xl md:text-2xl text-text-secondary mb-12 fade-in">Evolving Mixture of Experts through Collaboration</p>
+
+            <!-- Main Architecture Diagram -->
+            <div class="max-w-4xl mx-auto fade-in svg-animate">
+                <svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Background -->
+                    <rect width="1000" height="600" fill="#1a202c" rx="10"/>
+
+                    <!-- Input Token -->
+                    <circle cx="100" cy="300" r="30" fill="#4299e1" opacity="0.8"/>
+                    <text x="100" y="305" text-anchor="middle" fill="white" font-family="monospace" font-size="14">x</text>
+
+                    <!-- Arrow to Experts -->
+                    <path d="M 130 300 L 200 300" stroke="#4299e1" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- N Experts -->
+                    <g id="experts">
+                        <rect x="220" y="100" width="60" height="40" fill="#48bb78" rx="5" opacity="0.8"/>
+                        <text x="250" y="125" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₁</text>
+
+                        <rect x="220" y="170" width="60" height="40" fill="#48bb78" rx="5" opacity="0.8"/>
+                        <text x="250" y="195" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₂</text>
+
+                        <rect x="220" y="240" width="60" height="40" fill="#48bb78" rx="5" opacity="0.8"/>
+                        <text x="250" y="265" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₃</text>
+
+                        <rect x="220" y="310" width="60" height="40" fill="#48bb78" rx="5" opacity="0.8"/>
+                        <text x="250" y="335" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₄</text>
+
+                        <rect x="220" y="380" width="60" height="40" fill="#48bb78" rx="5" opacity="0.8"/>
+                        <text x="250" y="405" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₅</text>
+
+                        <text x="250" y="460" text-anchor="middle" fill="#e2e8f0" font-family="monospace" font-size="14">N Experts</text>
+                    </g>
+
+                    <!-- Arrows to Router Contextualization -->
+                    <path d="M 280 120 L 350 200" stroke="#48bb78" stroke-width="1.5" opacity="0.6"/>
+                    <path d="M 280 190 L 350 220" stroke="#48bb78" stroke-width="1.5" opacity="0.6"/>
+                    <path d="M 280 260 L 350 240" stroke="#48bb78" stroke-width="1.5" opacity="0.6"/>
+                    <path d="M 280 330 L 350 260" stroke="#48bb78" stroke-width="1.5" opacity="0.6"/>
+                    <path d="M 280 400 L 350 280" stroke="#48bb78" stroke-width="1.5" opacity="0.6"/>
+
+                    <!-- Router Contextualization -->
+                    <rect x="350" y="200" width="120" height="100" fill="#ed8936" rx="10" opacity="0.9"/>
+                    <text x="410" y="230" text-anchor="middle" fill="white" font-family="monospace" font-size="12">Router</text>
+                    <text x="410" y="250" text-anchor="middle" fill="white" font-family="monospace" font-size="12">Contextualization</text>
+                    <text x="410" y="270" text-anchor="middle" fill="white" font-family="monospace" font-size="10">(Self-Attention)</text>
+
+                    <!-- Arrow to Selection -->
+                    <path d="M 470 250 L 540 250" stroke="#ed8936" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- Selection -->
+                    <circle cx="570" cy="250" r="25" fill="#9f7aea" opacity="0.9"/>
+                    <text x="570" y="255" text-anchor="middle" fill="white" font-family="monospace" font-size="12">Top-k</text>
+
+                    <!-- Selected Experts -->
+                    <g id="selected-experts">
+                        <rect x="620" y="180" width="60" height="40" fill="#9f7aea" rx="5" opacity="0.9"/>
+                        <text x="650" y="205" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₁</text>
+
+                        <rect x="620" y="280" width="60" height="40" fill="#9f7aea" rx="5" opacity="0.9"/>
+                        <text x="650" y="305" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₃</text>
+
+                        <text x="650" y="350" text-anchor="middle" fill="#e2e8f0" font-family="monospace" font-size="14">k Selected</text>
+                    </g>
+
+                    <!-- Arrows to Collaborative Fusion -->
+                    <path d="M 680 200 L 750 230" stroke="#9f7aea" stroke-width="2"/>
+                    <path d="M 680 300 L 750 270" stroke="#9f7aea" stroke-width="2"/>
+
+                    <!-- Collaborative Fusion -->
+                    <rect x="750" y="200" width="120" height="100" fill="#e53e3e" rx="10" opacity="0.9"/>
+                    <text x="810" y="230" text-anchor="middle" fill="white" font-family="monospace" font-size="12">Collaborative</text>
+                    <text x="810" y="250" text-anchor="middle" fill="white" font-family="monospace" font-size="12">Fusion</text>
+                    <text x="810" y="270" text-anchor="middle" fill="white" font-family="monospace" font-size="10">(Cross-Attention)</text>
+
+                    <!-- Arrow to Output -->
+                    <path d="M 870 250 L 920 250" stroke="#e53e3e" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- Output -->
+                    <circle cx="950" cy="250" r="30" fill="#4299e1" opacity="0.8"/>
+                    <text x="950" y="255" text-anchor="middle" fill="white" font-family="monospace" font-size="14">y</text>
+
+                    <!-- Arrow Marker Definition -->
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#e2e8f0"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- Overview Section -->
+    <section id="overview" class="py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-mono font-bold mb-4 text-accent-blue fade-in">The Core Idea: An Analogy</h2>
+            <div class="accent-line fade-in"></div>
+
+            <div class="grid md:grid-cols-2 gap-12 mt-12">
+                <!-- Standard MoE -->
+                <div class="bg-dark-card p-8 rounded-lg fade-in">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-2xl font-bold">Standard MoE</h3>
+                    </div>
+                    <h4 class="text-lg font-semibold text-accent-orange mb-4">The Overwhelmed President</h4>
+                    <ul class="space-y-3 text-text-secondary">
+                        <li class="flex items-start">
+                            <span class="text-accent-orange mr-2">•</span>
+                            <span>Quick decision based only on the title</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent-orange mr-2">•</span>
+                            <span>Selects ministers in isolation</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent-orange mr-2">•</span>
+                            <span>Each minister works alone without communication</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent-orange mr-2">•</span>
+                            <span>Mechanical combination of separate reports</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent-orange mr-2">•</span>
+                            <span>Result: Incoherent and contradictory policies</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- MoC -->
+                <div class="bg-dark-card p-8 rounded-lg fade-in">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 bg-accent-green rounded-full flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-2xl font-bold">MoC</h3>
+                    </div>
+                    <h4 class="text-lg font-semibold text-accent-green mb-4">The Wise President</h4>
+                    <ul class="space-y-3 text-text-secondary">
+                        <li class="flex items-start">
+                            <span class="text-accent-green mr-2">•</span>
+                            <span>Pre-analysis with all ministers</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent-green mr-2">•</span>
+                            <span>Contextual meeting for holistic understanding</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent-green mr-2">•</span>
+                            <span>Informed selection based on full context</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent-green mr-2">•</span>
+                            <span>Collaborative refinement of solutions</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent-green mr-2">•</span>
+                            <span>Result: Cohesive and integrated policies</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="architecture" class="py-20 bg-dark-card/30">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-mono font-bold mb-4 text-accent-blue fade-in">Architectural Deep Dive</h2>
+            <div class="accent-line fade-in"></div>
+
+            <!-- Router Contextualization -->
+            <div class="mt-12 fade-in">
+                <h3 class="text-3xl font-bold mb-6 text-accent-orange">Router Contextualization</h3>
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <p class="text-text-secondary mb-4">
+                            Unlike traditional MoE routers that make blind decisions based solely on input tokens,
+                            the MoC router uses self-attention over ALL expert outputs to make informed routing decisions.
+                        </p>
+                        <div class="code-block">
+                            <pre class="text-sm text-green-400"><code># Self-attention over ALL expert outputs
+contextualized_experts, _ = self.router_self_attn(
+    expert_flat, expert_flat, expert_flat
+)</code></pre>
+                        </div>
+                    </div>
+                    <div class="flex justify-center">
+                        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="400" height="300" fill="#2d3748" rx="10"/>
+
+                            <!-- Expert Outputs -->
+                            <rect x="20" y="50" width="50" height="30" fill="#48bb78" rx="5" opacity="0.8"/>
+                            <text x="45" y="70" text-anchor="middle" fill="white" font-family="monospace" font-size="10">E₁</text>
+
+                            <rect x="20" y="100" width="50" height="30" fill="#48bb78" rx="5" opacity="0.8"/>
+                            <text x="45" y="120" text-anchor="middle" fill="white" font-family="monospace" font-size="10">E₂</text>
+
+                            <rect x="20" y="150" width="50" height="30" fill="#48bb78" rx="5" opacity="0.8"/>
+                            <text x="45" y="170" text-anchor="middle" fill="white" font-family="monospace" font-size="10">E₃</text>
+
+                            <!-- Self-Attention -->
+                            <circle cx="150" cy="150" r="40" fill="#ed8936" opacity="0.9"/>
+                            <text x="150" y="145" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Self</text>
+                            <text x="150" y="160" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Attention</text>
+
+                            <!-- Connections -->
+                            <path d="M 70 65 L 110 130" stroke="#48bb78" stroke-width="1.5"/>
+                            <path d="M 70 115 L 110 140" stroke="#48bb78" stroke-width="1.5"/>
+                            <path d="M 70 165 L 110 160" stroke="#48bb78" stroke-width="1.5"/>
+
+                            <!-- Contextualized Output -->
+                            <rect x="250" y="125" width="100" height="50" fill="#9f7aea" rx="5" opacity="0.9"/>
+                            <text x="300" y="145" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Contextualized</text>
+                            <text x="300" y="160" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Experts</text>
+
+                            <path d="M 190 150 L 250 150" stroke="#ed8936" stroke-width="2" marker-end="url(#arrowhead2)"/>
+
+                            <defs>
+                                <marker id="arrowhead2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#e2e8f0"/>
+                                </marker>
+                            </defs>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Collaborative Fusion -->
+            <div class="mt-16 fade-in">
+                <h3 class="text-3xl font-bold mb-6 text-accent-green">Collaborative Fusion</h3>
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="order-2 md:order-1">
+                        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="400" height="300" fill="#2d3748" rx="10"/>
+
+                            <!-- Selected Experts -->
+                            <rect x="30" y="80" width="60" height="40" fill="#9f7aea" rx="5" opacity="0.9"/>
+                            <text x="60" y="105" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₁</text>
+
+                            <rect x="30" y="180" width="60" height="40" fill="#9f7aea" rx="5" opacity="0.9"/>
+                            <text x="60" y="205" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₂</text>
+
+                            <!-- Cross-Attention -->
+                            <rect x="150" y="100" width="100" height="100" fill="#e53e3e" rx="10" opacity="0.9"/>
+                            <text x="200" y="140" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Cross</text>
+                            <text x="200" y="155" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Attention</text>
+                            <text x="200" y="170" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Fusion</text>
+
+                            <!-- Bidirectional Arrows -->
+                            <path d="M 90 100 L 150 130" stroke="#9f7aea" stroke-width="2" marker-end="url(#arrowhead3)"/>
+                            <path d="M 150 140 L 90 110" stroke="#e53e3e" stroke-width="1.5" marker-end="url(#arrowhead3)"/>
+
+                            <path d="M 90 200 L 150 170" stroke="#9f7aea" stroke-width="2" marker-end="url(#arrowhead3)"/>
+                            <path d="M 150 160 L 90 190" stroke="#e53e3e" stroke-width="1.5" marker-end="url(#arrowhead3)"/>
+
+                            <!-- Refined Output -->
+                            <rect x="300" y="125" width="70" height="50" fill="#4299e1" rx="5" opacity="0.9"/>
+                            <text x="335" y="145" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Refined</text>
+                            <text x="335" y="160" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Output</text>
+
+                            <path d="M 250 150 L 300 150" stroke="#e53e3e" stroke-width="2" marker-end="url(#arrowhead3)"/>
+
+                            <defs>
+                                <marker id="arrowhead3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#e2e8f0"/>
+                                </marker>
+                            </defs>
+                        </svg>
+                    </div>
+                    <div class="order-1 md:order-2">
+                        <p class="text-text-secondary mb-4">
+                            Selected experts collaborate through cross-attention, allowing each expert to refine
+                            its output based on the perspectives of its peers before final fusion.
+                        </p>
+                        <div class="code-block">
+                            <pre class="text-sm text-green-400"><code># Cross-attention between selected experts
+collaborative_outputs, collab_attn = self.collab_cross_attn(
+    selected_flat, selected_flat, selected_flat
+)
+
+# Additional refinement
+refined_outputs = self.collab_ffn(collaborative_outputs) + collaborative_outputs</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Auxiliary Loss -->
+            <div class="mt-16 fade-in">
+                <h3 class="text-3xl font-bold mb-6 text-accent-blue">Advanced Auxiliary Loss</h3>
+                <div class="bg-dark-card p-6 rounded-lg">
+                    <p class="text-text-secondary mb-4">
+                        The auxiliary loss combines diversity and balance components to ensure stable training
+                        and effective collaboration between experts.
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="text-lg font-semibold text-accent-orange mb-2">Diversity Loss</h4>
+                            <p class="text-text-secondary text-sm">
+                                Maximizes entropy of cross-attention weights to encourage diverse collaboration patterns.
+                            </p>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-semibold text-accent-green mb-2">Balance Loss</h4>
+                            <p class="text-text-secondary text-sm">
+                                Minimizes variance of expert usage to ensure all experts are utilized effectively.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Analysis Section -->
+    <section id="analysis" class="py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-mono font-bold mb-4 text-accent-blue fade-in">Technical Analysis</h2>
+            <div class="accent-line fade-in"></div>
+
+            <div class="grid md:grid-cols-3 gap-8 mt-12">
+                <!-- Computational Complexity -->
+                <div class="bg-dark-card p-6 rounded-lg fade-in">
+                    <h3 class="text-2xl font-bold mb-4 text-accent-orange">Computational Complexity</h3>
+                    <div class="text-text-secondary space-y-2">
+                        <p><strong>MoC Forward Pass:</strong></p>
+                        <ul class="list-disc list-inside text-sm space-y-1">
+                            <li>Expert computation: O(B × S × n_experts × d_model²)</li>
+                            <li>Router self-attention: O(B × S × n_experts² × d_model)</li>
+                            <li>Cross-attention: O(B × S × top_k² × d_model)</li>
+                            <li><strong>Total: O(B × S × n_experts × d_model²)</strong></li>
+                        </ul>
+                        <p class="mt-4 text-sm"><strong>Trade-off:</strong> Higher computational cost for improved quality and collaboration.</p>
+                    </div>
+                </div>
+
+                <!-- Key Advantages -->
+                <div class="bg-dark-card p-6 rounded-lg fade-in">
+                    <h3 class="text-2xl font-bold mb-4 text-accent-green">Key Advantages</h3>
+                    <ul class="text-text-secondary space-y-3">
+                        <li class="flex items-start">
+                            <span class="text-accent-green mr-2">✓</span>
+                            <span>Experts collaborate instead of competing</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent-green mr-2">✓</span>
+                            <span>Contextualized routing decisions</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent-green mr-2">✓</span>
+                            <span>Improved training stability</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent-green mr-2">✓</span>
+                            <span>Better specialization and knowledge integration</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent-green mr-2">✓</span>
+                            <span>Flexible and configurable architecture</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Trade-offs -->
+                <div class="bg-dark-card p-6 rounded-lg fade-in">
+                    <h3 class="text-2xl font-bold mb-4 text-accent-blue">Trade-offs</h3>
+                    <ul class="text-text-secondary space-y-3">
+                        <li class="flex items-start">
+                            <span class="text-accent-blue mr-2">⚠</span>
+                            <span>Higher computational cost than standard MoE</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent-blue mr-2">⚠</span>
+                            <span>Increased architectural complexity</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent-blue mr-2">⚠</span>
+                            <span>More hyperparameters to tune</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent-blue mr-2">⚠</span>
+                            <span>Experimental validation needed</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Configuration Table -->
+            <div class="mt-12 fade-in">
+                <h3 class="text-2xl font-bold mb-6">Recommended Configuration</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full bg-dark-card rounded-lg overflow-hidden">
+                        <thead>
+                            <tr class="bg-dark-bg">
+                                <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Parameter</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Recommended Value</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Justification</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-700">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono">n_experts</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">8-16</td>
+                                <td class="px-6 py-4 text-sm text-text-secondary">Balance between capacity and efficiency</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono">top_k</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">2-4</td>
+                                <td class="px-6 py-4 text-sm text-text-secondary">Allows collaboration without excessive overhead</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono">aux_loss_weight</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">1e-2 to 1e-3</td>
+                                <td class="px-6 py-4 text-sm text-text-secondary">Sufficient for regularization</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono">router_temperature</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">0.5-2.0</td>
+                                <td class="px-6 py-4 text-sm text-text-secondary">Control routing distribution sharpness</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Section -->
+    <section id="code" class="py-20 bg-dark-card/30">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-4xl font-mono font-bold mb-4 text-accent-blue fade-in">Access the Code</h2>
+            <div class="accent-line mx-auto fade-in"></div>
+
+            <div class="max-w-2xl mx-auto mt-12 fade-in">
+                <p class="text-xl text-text-secondary mb-8">
+                    The source code for <span class="font-mono text-accent-blue">LunarisCodex-MoC</span> will be made publicly available soon.
+                </p>
+                <p class="text-text-secondary mb-8">
+                    Stay tuned for the official GitHub repository release, containing the complete implementation,
+                    training scripts, and pre-trained models.
+                </p>
+                <button class="bg-accent-blue hover:bg-accent-blue/80 text-white font-bold py-3 px-8 rounded-lg transition-colors transform hover:scale-105">
+                    <span class="flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        View on GitHub
+                    </span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 border-t border-gray-700">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-text-secondary">
+                A project by
+                <a href="https://www.linkedin.com/in/francisco-antonio-0434aa284/" target="_blank" class="text-accent-blue hover:text-accent-blue/80 transition-colors">
+                    Francisco
+                </a>
+            </p>
+            <p class="text-sm text-gray-500 mt-2">© 2025 LunarisCodex-MoC. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close mobile menu when clicking on a link
+        const mobileLinks = mobileMenu.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // Fade in animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
