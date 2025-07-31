@@ -1,629 +1,747 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LunarisCodex-MoC - Evolving Mixture of Experts through Collaboration</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LunarisCodex-MoC — Mixture of Collaborative Experts</title>
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- SEO / Social previews -->
+  <meta name="description" content="LunarisCodex-MoC is a Llama-style language model featuring a Mixture of Collaborative Experts (MoC): contextualized routing + expert collaboration via cross-attention."/>
+  <meta property="og:title" content="LunarisCodex-MoC — Mixture of Collaborative Experts"/>
+  <meta property="og:description" content="Experts that collaborate, not compete. Contextualized routing and cross-attention fusion for richer representations."/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://github.com/MeryylleA/lunariscodex-MoC"/>
+  <meta name="twitter:card" content="summary_large_image"/>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
 
-    <!-- Custom Tailwind Config -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'dark-bg': '#1a202c',
-                        'dark-card': '#2d3748',
-                        'accent-blue': '#4299e1',
-                        'accent-green': '#48bb78',
-                        'accent-orange': '#ed8936',
-                        'text-primary': '#f7fafc',
-                        'text-secondary': '#e2e8f0'
-                    },
-                    fontFamily: {
-                        'sans': ['Inter', 'sans-serif'],
-                        'mono': ['JetBrains Mono', 'monospace']
-                    }
-                }
-            }
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'dark-bg': '#0f172a',         /* Slate-900 */
+            'dark-elev': '#111827',       /* Gray-900 */
+            'dark-card': '#1f2937',       /* Gray-800 */
+            'muted': '#94a3b8',           /* Slate-400 */
+            'accent-blue': '#60a5fa',
+            'accent-green': '#34d399',
+            'accent-orange': '#fb923c',
+            'accent-purple': '#a78bfa',
+            'text-primary': '#f8fafc',
+            'text-secondary': '#cbd5e1'
+          },
+          fontFamily: {
+            'sans': ['Inter', 'system-ui', 'sans-serif'],
+            'mono': ['JetBrains Mono', 'monospace']
+          },
+          boxShadow: {
+            'soft': '0 10px 30px rgba(0,0,0,0.25)',
+            'ring': '0 0 0 1px rgba(255,255,255,0.05) inset'
+          },
+          backdropBlur: {
+            xs: '2px',
+          }
         }
-    </script>
+      }
+    }
+  </script>
 
-    <style>
-        html {
-            scroll-behavior: smooth;
-        }
-
-        .fade-in {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s ease, transform 0.6s ease;
-        }
-
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .svg-animate {
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .code-block {
-            background: #1a202c;
-            border: 1px solid #4a5568;
-            border-radius: 0.375rem;
-            padding: 1rem;
-            overflow-x: auto;
-        }
-
-        .accent-line {
-            background: linear-gradient(90deg, #4299e1, #48bb78);
-            height: 3px;
-            width: 60px;
-            margin: 1rem 0;
-        }
-    </style>
+  <style>
+    html { scroll-behavior: smooth; }
+    .fade-in { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+    .glow { box-shadow: 0 0 60px rgba(96,165,250,.15); }
+    .grad-hero { background: radial-gradient(1200px 600px at 50% -50%, rgba(96,165,250,.18), rgba(0,0,0,0)); }
+    .code-block { background: #0b1220; border: 1px solid #1e293b; border-radius: .5rem; padding: 1rem; overflow-x: auto; position: relative; }
+    .code-title { position: absolute; top: 0; right: 0; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: #64748b; padding: .35rem .5rem; }
+    .copy-btn { position: absolute; top: .5rem; right: .5rem; background: #111827; border: 1px solid #374151; color: #cbd5e1; font-size: .75rem; padding: .25rem .5rem; border-radius: .375rem; opacity: .9; }
+    .copy-btn:hover { opacity: 1; }
+    .accent-line { background: linear-gradient(90deg, #60a5fa, #34d399, #a78bfa); height: 3px; width: 70px; margin: 1rem 0 0; border-radius: 9999px; }
+    .svg-animate { animation: float 5s ease-in-out infinite; }
+    @keyframes float { 0%,100%{ transform: translateY(0)} 50%{ transform: translateY(-8px)} }
+    .badge { font-size: .65rem; border: 1px solid #334155; background: rgba(2,6,23,.6); padding: .25rem .5rem; border-radius: 9999px; }
+    .pill { background: rgba(15,23,42,.6); border: 1px solid #334155; border-radius: 9999px; padding: .35rem .65rem; font-size: .8rem; color: #e5e7eb; }
+  </style>
 </head>
-<body class="bg-dark-bg text-text-primary font-sans">
-    <!-- Header/Navbar -->
-    <header class="fixed top-0 w-full bg-dark-bg/90 backdrop-blur-sm z-50 border-b border-gray-700">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="text-xl font-mono font-bold text-accent-blue">LunarisCodex-MoC</div>
-            <div class="hidden md:flex space-x-8">
-                <a href="#overview" class="text-text-secondary hover:text-accent-blue transition-colors">Overview</a>
-                <a href="#architecture" class="text-text-secondary hover:text-accent-blue transition-colors">Architecture</a>
-                <a href="#analysis" class="text-text-secondary hover:text-accent-blue transition-colors">Analysis</a>
-                <a href="#code" class="text-text-secondary hover:text-accent-blue transition-colors">Code</a>
-            </div>
-            <div class="md:hidden">
-                <button id="mobile-menu-button" class="text-text-secondary">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-            </div>
-        </nav>
-    </header>
 
-    <!-- Mobile Menu -->
-    <div id="mobile-menu" class="fixed inset-0 bg-dark-bg z-40 hidden">
-        <div class="flex flex-col items-center justify-center h-full space-y-8">
-            <a href="#overview" class="text-2xl text-text-secondary hover:text-accent-blue transition-colors">Overview</a>
-            <a href="#architecture" class="text-2xl text-text-secondary hover:text-accent-blue transition-colors">Architecture</a>
-            <a href="#analysis" class="text-2xl text-text-secondary hover:text-accent-blue transition-colors">Analysis</a>
-            <a href="#code" class="text-2xl text-text-secondary hover:text-accent-blue transition-colors">Code</a>
-        </div>
+<body class="bg-dark-bg text-text-primary font-sans antialiased">
+
+  <!-- Header -->
+  <header class="fixed top-0 inset-x-0 z-50 bg-dark-bg/75 backdrop-blur-xs border-b border-white/5">
+    <nav class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="#" class="flex items-center space-x-3">
+        <span class="w-2.5 h-2.5 rounded-full bg-accent-blue"></span>
+        <span class="font-mono font-semibold tracking-wide">LunarisCodex-MoC</span>
+      </a>
+      <div class="hidden md:flex items-center space-x-8 text-text-secondary">
+        <a class="hover:text-accent-blue" href="#overview">Overview</a>
+        <a class="hover:text-accent-blue" href="#architecture">Architecture</a>
+        <a class="hover:text-accent-blue" href="#optimizations">Optimizations</a>
+        <a class="hover:text-accent-blue" href="#analysis">Analysis</a>
+        <a class="hover:text-accent-blue" href="#quickstart">Quickstart</a>
+        <a class="hover:text-accent-blue" href="#faq">FAQ</a>
+        <a class="hover:text-accent-blue" href="#code">Code</a>
+      </div>
+      <div class="hidden md:flex items-center space-x-3">
+        <a href="https://github.com/MeryylleA/lunariscodex-MoC" target="_blank" class="pill hover:border-accent-blue hover:text-accent-blue transition">GitHub</a>
+      </div>
+      <button id="mobile-menu-button" class="md:hidden p-2 rounded-md border border-white/10 text-text-secondary">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </nav>
+    <!-- Mobile -->
+    <div id="mobile-menu" class="hidden md:hidden bg-dark-bg border-t border-white/5">
+      <div class="px-6 py-4 grid gap-3 text-text-secondary">
+        <a class="hover:text-accent-blue" href="#overview">Overview</a>
+        <a class="hover:text-accent-blue" href="#architecture">Architecture</a>
+        <a class="hover:text-accent-blue" href="#optimizations">Optimizations</a>
+        <a class="hover:text-accent-blue" href="#analysis">Analysis</a>
+        <a class="hover:text-accent-blue" href="#quickstart">Quickstart</a>
+        <a class="hover:text-accent-blue" href="#faq">FAQ</a>
+        <a class="hover:text-accent-blue" href="#code">Code</a>
+      </div>
     </div>
+  </header>
 
-    <!-- Hero Section -->
-    <section class="min-h-screen flex items-center justify-center pt-20">
-        <div class="container mx-auto px-6 text-center">
-            <h1 class="text-5xl md:text-7xl font-mono font-bold mb-4 fade-in">
-                <span class="text-accent-blue">LunarisCodex</span>-MoC
-            </h1>
-            <p class="text-xl md:text-2xl text-text-secondary mb-12 fade-in">Evolving Mixture of Experts through Collaboration</p>
+  <!-- Hero -->
+  <section class="relative pt-28 md:pt-32 pb-10 grad-hero">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid md:grid-cols-2 gap-10 items-center">
+        <div class="fade-in">
+          <div class="inline-flex items-center gap-2 mb-4">
+            <span class="badge">Llama-style LM</span>
+            <span class="badge">Mixture of Collaborative Experts</span>
+            <span class="badge">PyTorch</span>
+          </div>
+          <h1 class="text-4xl md:text-6xl font-mono font-bold leading-[1.1] mb-4">
+            Experts that collaborate,<br class="hidden md:block"/> not compete.
+          </h1>
+          <p class="text-lg md:text-xl text-text-secondary max-w-xl">
+            LunarisCodex-MoC replaces standard FFNs with a collaborative mixture-of-experts:
+            contextualized routing across all experts and cross-attention fusion among the selected ones.
+          </p>
+          <div class="flex flex-wrap items-center gap-3 mt-8">
+            <a href="https://github.com/MeryylleA/lunariscodex-MoC" target="_blank" class="bg-accent-blue text-white font-semibold px-5 py-3 rounded-lg hover:opacity-90 transition glow">
+              Star on GitHub
+            </a>
+            <a href="#quickstart" class="px-5 py-3 rounded-lg border border-white/10 text-text-secondary hover:text-accent-green hover:border-accent-green transition">
+              Get Started
+            </a>
+            <span class="text-sm text-muted ml-1">Maintained by Francisco • v1.0 • Jul 2025</span>
+          </div>
+        </div>
 
+        <div class="fade-in">
+          <div class="bg-dark-card border border-white/5 rounded-xl p-4 shadow-soft">
+            <div class="text-sm text-muted mb-2 px-1">High-level flow</div>
             <!-- Main Architecture Diagram -->
-            <div class="max-w-4xl mx-auto fade-in svg-animate">
-                <svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Background -->
-                    <rect width="1000" height="600" fill="#1a202c" rx="10"/>
-
-                    <!-- Input Token -->
-                    <circle cx="100" cy="300" r="30" fill="#4299e1" opacity="0.8"/>
-                    <text x="100" y="305" text-anchor="middle" fill="white" font-family="monospace" font-size="14">x</text>
-
-                    <!-- Arrow to Experts -->
-                    <path d="M 130 300 L 200 300" stroke="#4299e1" stroke-width="2" marker-end="url(#arrowhead)"/>
-
-                    <!-- N Experts -->
-                    <g id="experts">
-                        <rect x="220" y="100" width="60" height="40" fill="#48bb78" rx="5" opacity="0.8"/>
-                        <text x="250" y="125" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₁</text>
-
-                        <rect x="220" y="170" width="60" height="40" fill="#48bb78" rx="5" opacity="0.8"/>
-                        <text x="250" y="195" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₂</text>
-
-                        <rect x="220" y="240" width="60" height="40" fill="#48bb78" rx="5" opacity="0.8"/>
-                        <text x="250" y="265" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₃</text>
-
-                        <rect x="220" y="310" width="60" height="40" fill="#48bb78" rx="5" opacity="0.8"/>
-                        <text x="250" y="335" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₄</text>
-
-                        <rect x="220" y="380" width="60" height="40" fill="#48bb78" rx="5" opacity="0.8"/>
-                        <text x="250" y="405" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₅</text>
-
-                        <text x="250" y="460" text-anchor="middle" fill="#e2e8f0" font-family="monospace" font-size="14">N Experts</text>
-                    </g>
-
-                    <!-- Arrows to Router Contextualization -->
-                    <path d="M 280 120 L 350 200" stroke="#48bb78" stroke-width="1.5" opacity="0.6"/>
-                    <path d="M 280 190 L 350 220" stroke="#48bb78" stroke-width="1.5" opacity="0.6"/>
-                    <path d="M 280 260 L 350 240" stroke="#48bb78" stroke-width="1.5" opacity="0.6"/>
-                    <path d="M 280 330 L 350 260" stroke="#48bb78" stroke-width="1.5" opacity="0.6"/>
-                    <path d="M 280 400 L 350 280" stroke="#48bb78" stroke-width="1.5" opacity="0.6"/>
-
-                    <!-- Router Contextualization -->
-                    <rect x="350" y="200" width="120" height="100" fill="#ed8936" rx="10" opacity="0.9"/>
-                    <text x="410" y="230" text-anchor="middle" fill="white" font-family="monospace" font-size="12">Router</text>
-                    <text x="410" y="250" text-anchor="middle" fill="white" font-family="monospace" font-size="12">Contextualization</text>
-                    <text x="410" y="270" text-anchor="middle" fill="white" font-family="monospace" font-size="10">(Self-Attention)</text>
-
-                    <!-- Arrow to Selection -->
-                    <path d="M 470 250 L 540 250" stroke="#ed8936" stroke-width="2" marker-end="url(#arrowhead)"/>
-
-                    <!-- Selection -->
-                    <circle cx="570" cy="250" r="25" fill="#9f7aea" opacity="0.9"/>
-                    <text x="570" y="255" text-anchor="middle" fill="white" font-family="monospace" font-size="12">Top-k</text>
-
-                    <!-- Selected Experts -->
-                    <g id="selected-experts">
-                        <rect x="620" y="180" width="60" height="40" fill="#9f7aea" rx="5" opacity="0.9"/>
-                        <text x="650" y="205" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₁</text>
-
-                        <rect x="620" y="280" width="60" height="40" fill="#9f7aea" rx="5" opacity="0.9"/>
-                        <text x="650" y="305" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₃</text>
-
-                        <text x="650" y="350" text-anchor="middle" fill="#e2e8f0" font-family="monospace" font-size="14">k Selected</text>
-                    </g>
-
-                    <!-- Arrows to Collaborative Fusion -->
-                    <path d="M 680 200 L 750 230" stroke="#9f7aea" stroke-width="2"/>
-                    <path d="M 680 300 L 750 270" stroke="#9f7aea" stroke-width="2"/>
-
-                    <!-- Collaborative Fusion -->
-                    <rect x="750" y="200" width="120" height="100" fill="#e53e3e" rx="10" opacity="0.9"/>
-                    <text x="810" y="230" text-anchor="middle" fill="white" font-family="monospace" font-size="12">Collaborative</text>
-                    <text x="810" y="250" text-anchor="middle" fill="white" font-family="monospace" font-size="12">Fusion</text>
-                    <text x="810" y="270" text-anchor="middle" fill="white" font-family="monospace" font-size="10">(Cross-Attention)</text>
-
-                    <!-- Arrow to Output -->
-                    <path d="M 870 250 L 920 250" stroke="#e53e3e" stroke-width="2" marker-end="url(#arrowhead)"/>
-
-                    <!-- Output -->
-                    <circle cx="950" cy="250" r="30" fill="#4299e1" opacity="0.8"/>
-                    <text x="950" y="255" text-anchor="middle" fill="white" font-family="monospace" font-size="14">y</text>
-
-                    <!-- Arrow Marker Definition -->
-                    <defs>
-                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                            <polygon points="0 0, 10 3.5, 0 7" fill="#e2e8f0"/>
-                        </marker>
-                    </defs>
-                </svg>
+            <div class="svg-animate">
+              <svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
+                <rect width="1000" height="600" fill="#0b1220" rx="12"/>
+                <circle cx="100" cy="300" r="30" fill="#60a5fa" opacity="0.85"/>
+                <text x="100" y="305" text-anchor="middle" fill="white" font-family="monospace" font-size="14">x</text>
+                <path d="M130 300 L 200 300" stroke="#60a5fa" stroke-width="2" marker-end="url(#ah)"/>
+                <g>
+                  <rect x="220" y="100" width="60" height="40" fill="#34d399" rx="6" opacity="0.85"/>
+                  <text x="250" y="125" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₁</text>
+                  <rect x="220" y="170" width="60" height="40" fill="#34d399" rx="6" opacity="0.85"/>
+                  <text x="250" y="195" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₂</text>
+                  <rect x="220" y="240" width="60" height="40" fill="#34d399" rx="6" opacity="0.85"/>
+                  <text x="250" y="265" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₃</text>
+                  <rect x="220" y="310" width="60" height="40" fill="#34d399" rx="6" opacity="0.85"/>
+                  <text x="250" y="335" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₄</text>
+                  <rect x="220" y="380" width="60" height="40" fill="#34d399" rx="6" opacity="0.85"/>
+                  <text x="250" y="405" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₅</text>
+                  <text x="250" y="460" text-anchor="middle" fill="#cbd5e1" font-family="monospace" font-size="14">N Experts</text>
+                </g>
+                <path d="M 280 120 L 350 200" stroke="#34d399" stroke-width="1.5" opacity="0.6"/>
+                <path d="M 280 190 L 350 220" stroke="#34d399" stroke-width="1.5" opacity="0.6"/>
+                <path d="M 280 260 L 350 240" stroke="#34d399" stroke-width="1.5" opacity="0.6"/>
+                <path d="M 280 330 L 350 260" stroke="#34d399" stroke-width="1.5" opacity="0.6"/>
+                <path d="M 280 400 L 350 280" stroke="#34d399" stroke-width="1.5" opacity="0.6"/>
+                <rect x="350" y="200" width="140" height="110" fill="#fb923c" rx="12" opacity="0.95"/>
+                <text x="420" y="240" text-anchor="middle" fill="white" font-family="monospace" font-size="12">Router</text>
+                <text x="420" y="258" text-anchor="middle" fill="white" font-family="monospace" font-size="12">Contextualization</text>
+                <path d="M 490 255 L 540 255" stroke="#fb923c" stroke-width="2" marker-end="url(#ah)"/>
+                <circle cx="570" cy="255" r="26" fill="#a78bfa" opacity="0.95"/>
+                <text x="570" y="260" text-anchor="middle" fill="white" font-family="monospace" font-size="12">Top-k</text>
+                <g>
+                  <rect x="620" y="180" width="60" height="40" fill="#a78bfa" rx="6" opacity="0.95"/>
+                  <text x="650" y="205" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₁</text>
+                  <rect x="620" y="280" width="60" height="40" fill="#a78bfa" rx="6" opacity="0.95"/>
+                  <text x="650" y="305" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₃</text>
+                  <text x="650" y="350" text-anchor="middle" fill="#cbd5e1" font-family="monospace" font-size="14">k Selected</text>
+                </g>
+                <path d="M 680 200 L 750 230" stroke="#a78bfa" stroke-width="2"/>
+                <path d="M 680 300 L 750 270" stroke="#a78bfa" stroke-width="2"/>
+                <rect x="750" y="200" width="140" height="110" fill="#ef4444" rx="12" opacity="0.95"/>
+                <text x="820" y="240" text-anchor="middle" fill="white" font-family="monospace" font-size="12">Collaborative</text>
+                <text x="820" y="258" text-anchor="middle" fill="white" font-family="monospace" font-size="12">Fusion</text>
+                <text x="820" y="276" text-anchor="middle" fill="white" font-family="monospace" font-size="10">(Cross-Attention)</text>
+                <path d="M 890 255 L 930 255" stroke="#ef4444" stroke-width="2" marker-end="url(#ah)"/>
+                <circle cx="955" cy="255" r="30" fill="#60a5fa" opacity="0.85"/>
+                <text x="955" y="260" text-anchor="middle" fill="white" font-family="monospace" font-size="14">y</text>
+                <defs>
+                  <marker id="ah" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="#cbd5e1"/>
+                  </marker>
+                </defs>
+              </svg>
             </div>
+          </div>
+          <div class="mt-4 text-sm text-muted">
+            Source: <a class="underline hover:text-accent-blue" href="https://github.com/MeryylleA/lunariscodex-MoC" target="_blank">github.com/MeryylleA/lunariscodex-MoC</a>
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <!-- Overview Section -->
-    <section id="overview" class="py-20">
-        <div class="container mx-auto px-6">
-            <h2 class="text-4xl font-mono font-bold mb-4 text-accent-blue fade-in">The Core Idea: An Analogy</h2>
-            <div class="accent-line fade-in"></div>
+  <!-- Overview -->
+  <section id="overview" class="py-20">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl md:text-4xl font-mono font-bold fade-in">The Core Concept: An Analogy</h2>
+      <div class="accent-line fade-in"></div>
 
-            <div class="grid md:grid-cols-2 gap-12 mt-12">
-                <!-- Standard MoE -->
-                <div class="bg-dark-card p-8 rounded-lg fade-in">
-                    <div class="flex items-center mb-6">
-                        <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center mr-4">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-2xl font-bold">Standard MoE</h3>
-                    </div>
-                    <h4 class="text-lg font-semibold text-accent-orange mb-4">The Overwhelmed President</h4>
-                    <ul class="space-y-3 text-text-secondary">
-                        <li class="flex items-start">
-                            <span class="text-accent-orange mr-2">•</span>
-                            <span>Quick decision based only on the title</span>
-                        </li>
-                        <li class="flex items-start">
-                            <span class="text-accent-orange mr-2">•</span>
-                            <span>Selects ministers in isolation</span>
-                        </li>
-                        <li class="flex items-start">
-                            <span class="text-accent-orange mr-2">•</span>
-                            <span>Each minister works alone without communication</span>
-                        </li>
-                        <li class="flex items-start">
-                            <span class="text-accent-orange mr-2">•</span>
-                            <span>Mechanical combination of separate reports</span>
-                        </li>
-                        <li class="flex items-start">
-                            <span class="text-accent-orange mr-2">•</span>
-                            <span>Result: Incoherent and contradictory policies</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- MoC -->
-                <div class="bg-dark-card p-8 rounded-lg fade-in">
-                    <div class="flex items-center mb-6">
-                        <div class="w-12 h-12 bg-accent-green rounded-full flex items-center justify-center mr-4">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-2xl font-bold">MoC</h3>
-                    </div>
-                    <h4 class="text-lg font-semibold text-accent-green mb-4">The Wise President</h4>
-                    <ul class="space-y-3 text-text-secondary">
-                        <li class="flex items-start">
-                            <span class="text-accent-green mr-2">•</span>
-                            <span>Pre-analysis with all ministers</span>
-                        </li>
-                        <li class="flex items-start">
-                            <span class="text-accent-green mr-2">•</span>
-                            <span>Contextual meeting for holistic understanding</span>
-                        </li>
-                        <li class="flex items-start">
-                            <span class="text-accent-green mr-2">•</span>
-                            <span>Informed selection based on full context</span>
-                        </li>
-                        <li class="flex items-start">
-                            <span class="text-accent-green mr-2">•</span>
-                            <span>Collaborative refinement of solutions</span>
-                        </li>
-                        <li class="flex items-start">
-                            <span class="text-accent-green mr-2">•</span>
-                            <span>Result: Cohesive and integrated policies</span>
-                        </li>
-                    </ul>
-                </div>
+      <div class="grid md:grid-cols-2 gap-8 mt-10">
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
+          <div class="flex items-center mb-4">
+            <div class="w-10 h-10 rounded-full bg-accent-orange/20 border border-accent-orange/40 flex items-center justify-center mr-3">
+              <span class="text-accent-orange font-semibold">MoE</span>
             </div>
+            <h3 class="text-2xl font-bold">Standard MoE</h3>
+          </div>
+          <h4 class="text-accent-orange font-semibold mb-2">The Overloaded President</h4>
+          <ul class="text-text-secondary space-y-2">
+            <li>Quick decision based only on the token.</li>
+            <li>Selects experts without seeing their opinions.</li>
+            <li>Experts work in isolation, zero exchange.</li>
+            <li>Outputs merged mechanically (weighted sum).</li>
+            <li>Often incoherent, contradictory behavior.</li>
+          </ul>
         </div>
-    </section>
 
-    <!-- Architecture Section -->
-    <section id="architecture" class="py-20 bg-dark-card/30">
-        <div class="container mx-auto px-6">
-            <h2 class="text-4xl font-mono font-bold mb-4 text-accent-blue fade-in">Architectural Deep Dive</h2>
-            <div class="accent-line fade-in"></div>
-
-            <!-- Router Contextualization -->
-            <div class="mt-12 fade-in">
-                <h3 class="text-3xl font-bold mb-6 text-accent-orange">Router Contextualization</h3>
-                <div class="grid md:grid-cols-2 gap-8 items-center">
-                    <div>
-                        <p class="text-text-secondary mb-4">
-                            Unlike traditional MoE routers that make blind decisions based solely on input tokens,
-                            the MoC router uses self-attention over ALL expert outputs to make informed routing decisions.
-                        </p>
-                        <div class="code-block">
-                            <pre class="text-sm text-green-400"><code># Self-attention over ALL expert outputs
-contextualized_experts, _ = self.router_self_attn(
-    expert_flat, expert_flat, expert_flat
-)</code></pre>
-                        </div>
-                    </div>
-                    <div class="flex justify-center">
-                        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="400" height="300" fill="#2d3748" rx="10"/>
-
-                            <!-- Expert Outputs -->
-                            <rect x="20" y="50" width="50" height="30" fill="#48bb78" rx="5" opacity="0.8"/>
-                            <text x="45" y="70" text-anchor="middle" fill="white" font-family="monospace" font-size="10">E₁</text>
-
-                            <rect x="20" y="100" width="50" height="30" fill="#48bb78" rx="5" opacity="0.8"/>
-                            <text x="45" y="120" text-anchor="middle" fill="white" font-family="monospace" font-size="10">E₂</text>
-
-                            <rect x="20" y="150" width="50" height="30" fill="#48bb78" rx="5" opacity="0.8"/>
-                            <text x="45" y="170" text-anchor="middle" fill="white" font-family="monospace" font-size="10">E₃</text>
-
-                            <!-- Self-Attention -->
-                            <circle cx="150" cy="150" r="40" fill="#ed8936" opacity="0.9"/>
-                            <text x="150" y="145" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Self</text>
-                            <text x="150" y="160" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Attention</text>
-
-                            <!-- Connections -->
-                            <path d="M 70 65 L 110 130" stroke="#48bb78" stroke-width="1.5"/>
-                            <path d="M 70 115 L 110 140" stroke="#48bb78" stroke-width="1.5"/>
-                            <path d="M 70 165 L 110 160" stroke="#48bb78" stroke-width="1.5"/>
-
-                            <!-- Contextualized Output -->
-                            <rect x="250" y="125" width="100" height="50" fill="#9f7aea" rx="5" opacity="0.9"/>
-                            <text x="300" y="145" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Contextualized</text>
-                            <text x="300" y="160" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Experts</text>
-
-                            <path d="M 190 150 L 250 150" stroke="#ed8936" stroke-width="2" marker-end="url(#arrowhead2)"/>
-
-                            <defs>
-                                <marker id="arrowhead2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                                    <polygon points="0 0, 10 3.5, 0 7" fill="#e2e8f0"/>
-                                </marker>
-                            </defs>
-                        </svg>
-                    </div>
-                </div>
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
+          <div class="flex items-center mb-4">
+            <div class="w-10 h-10 rounded-full bg-accent-green/20 border border-accent-green/40 flex items-center justify-center mr-3">
+              <span class="text-accent-green font-semibold">MoC</span>
             </div>
+            <h3 class="text-2xl font-bold">Mixture of Collaborative Experts</h3>
+          </div>
+          <h4 class="text-accent-green font-semibold mb-2">The Wise President</h4>
+          <ul class="text-text-secondary space-y-2">
+            <li>All experts do a quick pre-analysis.</li>
+            <li>Router contextualizes by attending over every expert’s view.</li>
+            <li>Informed top-k selection with full context.</li>
+            <li>Selected experts collaborate via cross-attention.</li>
+            <li>Cohesive, integrated final representation.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
 
-            <!-- Collaborative Fusion -->
-            <div class="mt-16 fade-in">
-                <h3 class="text-3xl font-bold mb-6 text-accent-green">Collaborative Fusion</h3>
-                <div class="grid md:grid-cols-2 gap-8 items-center">
-                    <div class="order-2 md:order-1">
-                        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="400" height="300" fill="#2d3748" rx="10"/>
+  <!-- Architecture -->
+  <section id="architecture" class="py-20 bg-dark-elev/60">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl md:text-4xl font-mono font-bold fade-in">Architectural Deep Dive</h2>
+      <div class="accent-line fade-in"></div>
 
-                            <!-- Selected Experts -->
-                            <rect x="30" y="80" width="60" height="40" fill="#9f7aea" rx="5" opacity="0.9"/>
-                            <text x="60" y="105" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₁</text>
+      <!-- Router Contextualization -->
+      <div class="grid md:grid-cols-2 gap-10 items-center mt-12">
+        <div class="fade-in">
+          <h3 class="text-2xl font-bold text-accent-orange mb-3">1) Router Contextualization</h3>
+          <p class="text-text-secondary mb-4">
+            Traditional MoE routers decide blindly from token embeddings. MoC first gathers
+            the outputs from all experts, then applies self-attention over these per-token expert vectors
+            to form a contextualized summary used for routing.
+          </p>
+          <div class="code-block">
+            <div class="code-title">CollaborativeExpertsModule.forward</div>
+            <button class="copy-btn" title="Copy">Copy</button>
+<pre><code class="language-py"># Expert parallelism → (B, S, n_experts, d_model)
+expert_outputs = self._get_expert_outputs(x)
 
-                            <rect x="30" y="180" width="60" height="40" fill="#9f7aea" rx="5" opacity="0.9"/>
-                            <text x="60" y="205" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₂</text>
+# Flatten per token for attention → (B*S, n_experts, d_model)
+expert_flat = expert_outputs.view(-1, self.n_experts, self.d_model)
 
-                            <!-- Cross-Attention -->
-                            <rect x="150" y="100" width="100" height="100" fill="#e53e3e" rx="10" opacity="0.9"/>
-                            <text x="200" y="140" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Cross</text>
-                            <text x="200" y="155" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Attention</text>
-                            <text x="200" y="170" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Fusion</text>
+# Contextualize via self-attention (uses flash kernels if available)
+with torch.backends.cuda.sdp_kernel(enable_flash=True):
+    contextualized_experts, _ = self.router_self_attn(
+        expert_flat, expert_flat, expert_flat
+    )
 
-                            <!-- Bidirectional Arrows -->
-                            <path d="M 90 100 L 150 130" stroke="#9f7aea" stroke-width="2" marker-end="url(#arrowhead3)"/>
-                            <path d="M 150 140 L 90 110" stroke="#e53e3e" stroke-width="1.5" marker-end="url(#arrowhead3)"/>
+# Residual + norm
+contextualized_experts = self.router_norm(contextualized_experts + expert_flat)
 
-                            <path d="M 90 200 L 150 170" stroke="#9f7aea" stroke-width="2" marker-end="url(#arrowhead3)"/>
-                            <path d="M 150 160 L 90 190" stroke="#e53e3e" stroke-width="1.5" marker-end="url(#arrowhead3)"/>
+# Routing logits from contextualized summary
+token_summary = contextualized_experts.mean(dim=1)
+routing_logits = self.router_gate(token_summary).view(B, S, self.n_experts)</code></pre>
+          </div>
+          <p class="text-sm text-muted mt-3">
+            Mapping: model_moe.py → CollaborativeExpertsModule.router_self_attn + router_gate
+          </p>
+        </div>
+        <div class="fade-in">
+          <div class="bg-dark-card border border-white/5 rounded-xl p-6">
+            <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+              <rect width="400" height="300" fill="#0b1220" rx="12"/>
+              <rect x="20" y="50" width="50" height="30" fill="#34d399" rx="5" opacity="0.85"/>
+              <text x="45" y="70" text-anchor="middle" fill="white" font-family="monospace" font-size="10">E₁</text>
+              <rect x="20" y="100" width="50" height="30" fill="#34d399" rx="5" opacity="0.85"/>
+              <text x="45" y="120" text-anchor="middle" fill="white" font-family="monospace" font-size="10">E₂</text>
+              <rect x="20" y="150" width="50" height="30" fill="#34d399" rx="5" opacity="0.85"/>
+              <text x="45" y="170" text-anchor="middle" fill="white" font-family="monospace" font-size="10">E₃</text>
+              <circle cx="150" cy="150" r="42" fill="#fb923c" opacity="0.95"/>
+              <text x="150" y="145" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Self</text>
+              <text x="150" y="160" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Attention</text>
+              <path d="M 70 65 L 110 130" stroke="#34d399" stroke-width="1.5"/>
+              <path d="M 70 115 L 110 140" stroke="#34d399" stroke-width="1.5"/>
+              <path d="M 70 165 L 110 160" stroke="#34d399" stroke-width="1.5"/>
+              <rect x="250" y="125" width="110" height="50" fill="#a78bfa" rx="6" opacity="0.95"/>
+              <text x="305" y="145" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Contextualized</text>
+              <text x="305" y="160" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Experts</text>
+              <path d="M 192 150 L 250 150" stroke="#fb923c" stroke-width="2" marker-end="url(#ah2)"/>
+              <defs>
+                <marker id="ah2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                  <polygon points="0 0, 10 3.5, 0 7" fill="#cbd5e1"/>
+                </marker>
+              </defs>
+            </svg>
+          </div>
+        </div>
+      </div>
 
-                            <!-- Refined Output -->
-                            <rect x="300" y="125" width="70" height="50" fill="#4299e1" rx="5" opacity="0.9"/>
-                            <text x="335" y="145" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Refined</text>
-                            <text x="335" y="160" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Output</text>
+      <!-- Collaborative Fusion -->
+      <div class="grid md:grid-cols-2 gap-10 items-center mt-16">
+        <div class="order-2 md:order-1 fade-in">
+          <div class="bg-dark-card border border-white/5 rounded-xl p-6">
+            <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+              <rect width="400" height="300" fill="#0b1220" rx="12"/>
+              <rect x="30" y="80" width="60" height="40" fill="#a78bfa" rx="6" opacity="0.95"/>
+              <text x="60" y="105" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₁</text>
+              <rect x="30" y="180" width="60" height="40" fill="#a78bfa" rx="6" opacity="0.95"/>
+              <text x="60" y="205" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₂</text>
+              <rect x="150" y="100" width="120" height="100" fill="#ef4444" rx="12" opacity="0.95"/>
+              <text x="210" y="140" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Cross</text>
+              <text x="210" y="155" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Attention</text>
+              <text x="210" y="170" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Fusion</text>
+              <path d="M 90 100 L 150 130" stroke="#a78bfa" stroke-width="2" marker-end="url(#ah3)"/>
+              <path d="M 150 140 L 90 110" stroke="#ef4444" stroke-width="1.5" marker-end="url(#ah3)"/>
+              <path d="M 90 200 L 150 170" stroke="#a78bfa" stroke-width="2" marker-end="url(#ah3)"/>
+              <path d="M 150 160 L 90 190" stroke="#ef4444" stroke-width="1.5" marker-end="url(#ah3)"/>
+              <rect x="300" y="125" width="80" height="50" fill="#60a5fa" rx="6" opacity="0.95"/>
+              <text x="340" y="145" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Refined</text>
+              <text x="340" y="160" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Output</text>
+              <path d="M 270 150 L 300 150" stroke="#ef4444" stroke-width="2" marker-end="url(#ah3)"/>
+              <defs>
+                <marker id="ah3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                  <polygon points="0 0, 10 3.5, 0 7" fill="#cbd5e1"/>
+                </marker>
+              </defs>
+            </svg>
+          </div>
+        </div>
+        <div class="order-1 md:order-2 fade-in">
+          <h3 class="text-2xl font-bold text-accent-green mb-3">2) Collaborative Fusion</h3>
+          <p class="text-text-secondary mb-4">
+            After top-k selection, experts don’t get summed immediately. They first collaborate via cross-attention,
+            refine via a lightweight FFN, and only then contribute to the final weighted fusion.
+          </p>
+          <div class="code-block">
+            <div class="code-title">Selected experts collaborate</div>
+            <button class="copy-btn" title="Copy">Copy</button>
+<pre><code># Top-k selection (temperature-scaled + softmax on k)
+selected_outputs, top_k_probs, routing_probs, top_k_idx = \
+    self._efficient_expert_selection(routing_logits, expert_outputs)
 
-                            <path d="M 250 150 L 300 150" stroke="#e53e3e" stroke-width="2" marker-end="url(#arrowhead3)"/>
+# Cross-attention within the k-selected experts (per token)
+refined_outputs, attn_weights = self._collaborative_fusion_checkpoint(selected_outputs)
 
-                            <defs>
-                                <marker id="arrowhead3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                                    <polygon points="0 0, 10 3.5, 0 7" fill="#e2e8f0"/>
-                                </marker>
-                            </defs>
-                        </svg>
-                    </div>
-                    <div class="order-1 md:order-2">
-                        <p class="text-text-secondary mb-4">
-                            Selected experts collaborate through cross-attention, allowing each expert to refine
-                            its output based on the perspectives of its peers before final fusion.
-                        </p>
-                        <div class="code-block">
-                            <pre class="text-sm text-green-400"><code># Cross-attention between selected experts
-collaborative_outputs, collab_attn = self.collab_cross_attn(
-    selected_flat, selected_flat, selected_flat
+# Weighted sum by routing probs, then output projection
+final_output = torch.sum(refined_outputs * top_k_probs.unsqueeze(-1), dim=2)
+final_output = self.o_proj(final_output)</code></pre>
+          </div>
+          <p class="text-sm text-muted mt-3">
+            Mapping: model_moe.py → CollaborativeExpertsModule.collab_cross_attn + collab_ffn + o_proj
+          </p>
+        </div>
+      </div>
+
+      <!-- Auxiliary Loss -->
+      <div class="mt-16 fade-in">
+        <h3 class="text-2xl font-bold text-accent-blue mb-3">Advanced Auxiliary Loss</h3>
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6">
+          <p class="text-text-secondary mb-4">
+            Training stability and meaningful collaboration are encouraged by combining
+            a balance loss (uniform expert usage) and a diversity loss (high-entropy cross-attention patterns).
+          </p>
+          <div class="grid md:grid-cols-2 gap-5">
+            <div>
+              <h4 class="font-semibold text-accent-orange mb-2">Balance Loss</h4>
+              <p class="text-text-secondary text-sm">Minimize variance of expert usage from routing probabilities.</p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-accent-green mb-2">Diversity Loss</h4>
+              <p class="text-text-secondary text-sm">Maximize entropy of <em>attn_weights</em> from collaborative fusion.</p>
+            </div>
+          </div>
+          <div class="code-block mt-4">
+            <div class="code-title">Auxiliary objective</div>
+            <button class="copy-btn" title="Copy">Copy</button>
+<pre><code>expert_usage = routing_probs.mean(dim=(0, 1))         # (n_experts,)
+balance_loss = ((expert_usage - expert_usage.mean())**2).mean()
+
+diversity_loss = -torch.sum(attn_weights * torch.log(attn_weights + 1e-9), dim=-1).mean()
+
+aux_loss = 0.01 * diversity_loss + 0.01 * balance_loss
+loss = main_loss + aux_loss * aux_loss_weight</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Optimizations -->
+  <section id="optimizations" class="py-20">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl md:text-4xl font-mono font-bold fade-in">Engineering Optimizations</h2>
+      <div class="accent-line fade-in"></div>
+      <div class="grid md:grid-cols-3 gap-6 mt-10">
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
+          <h3 class="text-xl font-semibold mb-2 text-accent-green">Expert Parallelism</h3>
+          <p class="text-text-secondary text-sm">
+            OptimizedExpertLayer batches all FFNs as tensors and performs parallel batched matmuls
+            for gate/up/down projections. Dramatically reduces Python overhead and temp allocations.
+          </p>
+          <div class="mt-4 text-xs text-muted">config: enable_expert_parallelism: true</div>
+        </div>
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
+          <h3 class="text-xl font-semibold mb-2 text-accent-blue">Flash Attention</h3>
+          <p class="text-text-secondary text-sm">
+            Router self-attention uses torch.backends.cuda.sdp_kernel(enable_flash=True) if available
+            for improved performance and lower memory use.
+          </p>
+        </div>
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
+          <h3 class="text-xl font-semibold mb-2 text-accent-purple">Checkpointing & Fused Optim</h3>
+          <p class="text-text-secondary text-sm">
+            Optional gradient checkpointing around collaborative fusion; AdamW uses 'fused' variant on CUDA when available.
+          </p>
+          <div class="mt-4 text-xs text-muted">config: use_gradient_checkpointing: true</div>
+        </div>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6 mt-6">
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
+          <h3 class="text-xl font-semibold mb-2 text-accent-orange">Memory Efficiency</h3>
+          <p class="text-text-secondary text-sm">
+            Reduced intermediate allocations, in-place safe ops, and pre-allocated buffers for routing/usage stats.
+          </p>
+        </div>
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
+          <h3 class="text-xl font-semibold mb-2 text-accent-green">Active Params Accounting</h3>
+          <p class="text-text-secondary text-sm">
+            Reports active parameters per forward (other + top_k experts × MoE layers), reflecting actual compute footprint.
+          </p>
+        </div>
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
+          <h3 class="text-xl font-semibold mb-2 text-accent-blue">Configurable & Modular</h3>
+          <p class="text-text-secondary text-sm">
+            Easily switch between standard FFN and MoC; set n_experts, top_k, router_temperature, and aux loss weight.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Analysis -->
+  <section id="analysis" class="py-20 bg-dark-elev/60">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl md:text-4xl font-mono font-bold fade-in">Technical Analysis</h2>
+      <div class="accent-line fade-in"></div>
+
+      <div class="grid md:grid-cols-3 gap-8 mt-10">
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
+          <h3 class="text-xl font-semibold text-accent-orange mb-3">Compute Complexity</h3>
+          <div class="text-text-secondary text-sm space-y-1">
+            <p>Expert forward: O(B · S · n_experts · d_model²)</p>
+            <p>Router SA: O(B · S · n_experts² · d_model)</p>
+            <p>Collab (k): O(B · S · k² · d_model)</p>
+            <p class="mt-3 text-accent-orange">Trade-off: higher compute for richer collaboration.</p>
+          </div>
+        </div>
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
+          <h3 class="text-xl font-semibold text-accent-green mb-3">Advantages</h3>
+          <ul class="text-text-secondary text-sm space-y-2">
+            <li>Context-aware routing decisions</li>
+            <li>Experts refine outputs jointly (coherence)</li>
+            <li>Improved stability via residuals + norms</li>
+            <li>Aux loss promotes usage balance & diversity</li>
+            <li>Flexible and configurable</li>
+          </ul>
+        </div>
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
+          <h3 class="text-xl font-semibold text-accent-blue mb-3">Trade-offs</h3>
+          <ul class="text-text-secondary text-sm space-y-2">
+            <li>Compute cost > standard MoE</li>
+            <li>More architectural complexity</li>
+            <li>Additional hyperparameters to tune</li>
+            <li>Requires experimental validation</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Recommended Config -->
+      <div class="mt-12 fade-in">
+        <h3 class="text-2xl font-bold mb-4">Recommended Configuration</h3>
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-dark-card/60 border border-white/5 rounded-xl overflow-hidden">
+            <thead class="bg-dark-bg/60">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-semibold text-text-secondary tracking-wider">Parameter</th>
+                <th class="px-6 py-3 text-left text-xs font-semibold text-text-secondary tracking-wider">Recommended</th>
+                <th class="px-6 py-3 text-left text-xs font-semibold text-text-secondary tracking-wider">Rationale</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5">
+              <tr>
+                <td class="px-6 py-4 text-sm font-mono">n_experts</td>
+                <td class="px-6 py-4 text-sm">8–16</td>
+                <td class="px-6 py-4 text-sm text-text-secondary">Capacity vs. compute balance</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm font-mono">top_k</td>
+                <td class="px-6 py-4 text-sm">2–4</td>
+                <td class="px-6 py-4 text-sm text-text-secondary">Meaningful collaboration without heavy overhead</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm font-mono">aux_loss_weight</td>
+                <td class="px-6 py-4 text-sm">1e-3 – 1e-2</td>
+                <td class="px-6 py-4 text-sm text-text-secondary">Keep aux ≈ 1–2% of main loss</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm font-mono">router_temperature</td>
+                <td class="px-6 py-4 text-sm">0.5 – 2.0</td>
+                <td class="px-6 py-4 text-sm text-text-secondary">&lt;1 sharper routing, &gt;1 smoother</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm font-mono">use_gradient_checkpointing</td>
+                <td class="px-6 py-4 text-sm">true (large models)</td>
+                <td class="px-6 py-4 text-sm text-text-secondary">Reduce memory in collab fusion</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm font-mono">enable_expert_parallelism</td>
+                <td class="px-6 py-4 text-sm">true</td>
+                <td class="px-6 py-4 text-sm text-text-secondary">Maximize throughput on GPUs</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Quickstart -->
+  <section id="quickstart" class="py-20">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl md:text-4xl font-mono font-bold fade-in">Quickstart</h2>
+      <div class="accent-line fade-in"></div>
+
+      <div class="grid md:grid-cols-2 gap-8 mt-10">
+        <div class="fade-in">
+          <h3 class="text-xl font-semibold mb-2">Minimal usage (dummy forward)</h3>
+          <div class="code-block">
+            <div class="code-title">Python</div>
+            <button class="copy-btn" title="Copy">Copy</button>
+<pre><code>import torch
+from model_moe import LunarisCodex, LunarisCodexConfig
+
+# Configure a small MoC
+cfg = LunarisCodexConfig(
+    d_model=512, n_layers=6, n_heads=8, n_kv_heads=8,
+    vocab_size=50257, max_seq_len=256,
+    n_experts=8, top_k=2, aux_loss_weight=0.1, router_temperature=1.0,
+    use_gradient_checkpointing=False, enable_expert_parallelism=True
 )
 
-# Additional refinement
-refined_outputs = self.collab_ffn(collaborative_outputs) + collaborative_outputs</code></pre>
-                        </div>
-                    </div>
-                </div>
-            </div>
+model = LunarisCodex(cfg)
+idx = torch.randint(0, cfg.vocab_size, (2, 32))  # (B, T)
+logits, loss_tuple, past = model(idx, targets=idx.clone())
+print('logits:', logits.shape)
+if loss_tuple:
+    total, main, aux = loss_tuple
+    print('losses:', total.item(), main.item(), aux.item())</code></pre>
+          </div>
 
-            <!-- Auxiliary Loss -->
-            <div class="mt-16 fade-in">
-                <h3 class="text-3xl font-bold mb-6 text-accent-blue">Advanced Auxiliary Loss</h3>
-                <div class="bg-dark-card p-6 rounded-lg">
-                    <p class="text-text-secondary mb-4">
-                        The auxiliary loss combines diversity and balance components to ensure stable training
-                        and effective collaboration between experts.
-                    </p>
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <h4 class="text-lg font-semibold text-accent-orange mb-2">Diversity Loss</h4>
-                            <p class="text-text-secondary text-sm">
-                                Maximizes entropy of cross-attention weights to encourage diverse collaboration patterns.
-                            </p>
-                        </div>
-                        <div>
-                            <h4 class="text-lg font-semibold text-accent-green mb-2">Balance Loss</h4>
-                            <p class="text-text-secondary text-sm">
-                                Minimizes variance of expert usage to ensure all experts are utilized effectively.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          <h3 class="text-xl font-semibold mt-8 mb-2">Training config (example)</h3>
+          <div class="code-block">
+            <div class="code-title">config_moc.yaml</div>
+            <button class="copy-btn" title="Copy">Copy</button>
+<pre><code>model:
+  d_model: 768
+  n_layers: 12
+  n_heads: 12
+  n_kv_heads: 12
+  vocab_size: 50257
+  max_seq_len: 1024
+  n_experts: 8
+  top_k: 2
+  aux_loss_weight: 0.1
+  router_temperature: 1.0
+
+data_dir: "data/"
+out_dir: "checkpoints/lunaris-moc-8e-2k"
+learning_rate: 3.0e-4
+max_steps: 600000
+batch_size: 16
+gradient_accumulation_steps: 4
+wandb_project: "lunaris-codex-moc"
+wandb_run_name: "moc-8-experts-2-topk"</code></pre>
+          </div>
         </div>
-    </section>
 
-    <!-- Analysis Section -->
-    <section id="analysis" class="py-20">
-        <div class="container mx-auto px-6">
-            <h2 class="text-4xl font-mono font-bold mb-4 text-accent-blue fade-in">Technical Analysis</h2>
-            <div class="accent-line fade-in"></div>
+        <div class="fade-in">
+          <h3 class="text-xl font-semibold mb-2">Run training</h3>
+          <div class="code-block">
+            <div class="code-title">Shell</div>
+            <button class="copy-btn" title="Copy">Copy</button>
+<pre><code>python train_moe.py config_moc.yaml</code></pre>
+          </div>
 
-            <div class="grid md:grid-cols-3 gap-8 mt-12">
-                <!-- Computational Complexity -->
-                <div class="bg-dark-card p-6 rounded-lg fade-in">
-                    <h3 class="text-2xl font-bold mb-4 text-accent-orange">Computational Complexity</h3>
-                    <div class="text-text-secondary space-y-2">
-                        <p><strong>MoC Forward Pass:</strong></p>
-                        <ul class="list-disc list-inside text-sm space-y-1">
-                            <li>Expert computation: O(B × S × n_experts × d_model²)</li>
-                            <li>Router self-attention: O(B × S × n_experts² × d_model)</li>
-                            <li>Cross-attention: O(B × S × top_k² × d_model)</li>
-                            <li><strong>Total: O(B × S × n_experts × d_model²)</strong></li>
-                        </ul>
-                        <p class="mt-4 text-sm"><strong>Trade-off:</strong> Higher computational cost for improved quality and collaboration.</p>
-                    </div>
-                </div>
+          <h3 class="text-xl font-semibold mt-8 mb-2">Monitoring</h3>
+          <ul class="text-text-secondary text-sm space-y-2">
+            <li><span class="pill mr-2">loss/main</span> Should decrease steadily</li>
+            <li><span class="pill mr-2">loss/aux</span> ≈ 1–2% of main loss (stable)</li>
+            <li><span class="pill mr-2">perplexity</span> Improves over time</li>
+            <li><span class="pill mr-2">expert usage variance</span> Low and uniform</li>
+          </ul>
 
-                <!-- Key Advantages -->
-                <div class="bg-dark-card p-6 rounded-lg fade-in">
-                    <h3 class="text-2xl font-bold mb-4 text-accent-green">Key Advantages</h3>
-                    <ul class="text-text-secondary space-y-3">
-                        <li class="flex items-start">
-                            <span class="text-accent-green mr-2">✓</span>
-                            <span>Experts collaborate instead of competing</span>
-                        </li>
-                        <li class="flex items-start">
-                            <span class="text-accent-green mr-2">✓</span>
-                            <span>Contextualized routing decisions</span>
-                        </li>
-                        <li class="flex items-start">
-                            <span class="text-accent-green mr-2">✓</span>
-                            <span>Improved training stability</span>
-                        </li>
-                        <li class="flex items-start">
-                            <span class="text-accent-green mr-2">✓</span>
-                            <span>Better specialization and knowledge integration</span>
-                        </li>
-                        <li class="flex items-start">
-                            <span class="text-accent-green mr-2">✓</span>
-                            <span>Flexible and configurable architecture</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Trade-offs -->
-                <div class="bg-dark-card p-6 rounded-lg fade-in">
-                    <h3 class="text-2xl font-bold mb-4 text-accent-blue">Trade-offs</h3>
-                    <ul class="text-text-secondary space-y-3">
-                        <li class="flex items-start">
-                            <span class="text-accent-blue mr-2">⚠</span>
-                            <span>Higher computational cost than standard MoE</span>
-                        </li>
-                        <li class="flex items-start">
-                            <span class="text-accent-blue mr-2">⚠</span>
-                            <span>Increased architectural complexity</span>
-                        </li>
-                        <li class="flex items-start">
-                            <span class="text-accent-blue mr-2">⚠</span>
-                            <span>More hyperparameters to tune</span>
-                        </li>
-                        <li class="flex items-start">
-                            <span class="text-accent-blue mr-2">⚠</span>
-                            <span>Experimental validation needed</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Configuration Table -->
-            <div class="mt-12 fade-in">
-                <h3 class="text-2xl font-bold mb-6">Recommended Configuration</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full bg-dark-card rounded-lg overflow-hidden">
-                        <thead>
-                            <tr class="bg-dark-bg">
-                                <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Parameter</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Recommended Value</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Justification</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-700">
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono">n_experts</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm">8-16</td>
-                                <td class="px-6 py-4 text-sm text-text-secondary">Balance between capacity and efficiency</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono">top_k</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm">2-4</td>
-                                <td class="px-6 py-4 text-sm text-text-secondary">Allows collaboration without excessive overhead</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono">aux_loss_weight</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm">1e-2 to 1e-3</td>
-                                <td class="px-6 py-4 text-sm text-text-secondary">Sufficient for regularization</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono">router_temperature</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm">0.5-2.0</td>
-                                <td class="px-6 py-4 text-sm text-text-secondary">Control routing distribution sharpness</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+          <h3 class="text-xl font-semibold mt-8 mb-2">Common fixes</h3>
+          <ul class="text-text-secondary text-sm space-y-2">
+            <li>Aux spikes → lower LR or add warmup</li>
+            <li>Experts unused → lower router_temperature</li>
+            <li>Instability → gradient clip / lower LR</li>
+            <li>Overfitting → reduce n_experts/top_k or add dropout</li>
+          </ul>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <!-- Code Section -->
-    <section id="code" class="py-20 bg-dark-card/30">
-        <div class="container mx-auto px-6 text-center">
-            <h2 class="text-4xl font-mono font-bold mb-4 text-accent-blue fade-in">Access the Code</h2>
-            <div class="accent-line mx-auto fade-in"></div>
+  <!-- FAQ -->
+  <section id="faq" class="py-20 bg-dark-elev/60">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl md:text-4xl font-mono font-bold fade-in">FAQ</h2>
+      <div class="accent-line fade-in"></div>
 
-            <div class="max-w-2xl mx-auto mt-12 fade-in">
-                <p class="text-xl text-text-secondary mb-8">
-                    The source code for <span class="font-mono text-accent-blue">LunarisCodex-MoC</span> will be made publicly available soon.
-                </p>
-                <p class="text-text-secondary mb-8">
-                    Stay tuned for the official GitHub repository release, containing the complete implementation,
-                    training scripts, and pre-trained models.
-                </p>
-                <button class="bg-accent-blue hover:bg-accent-blue/80 text-white font-bold py-3 px-8 rounded-lg transition-colors transform hover:scale-105">
-                    <span class="flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                        </svg>
-                        View on GitHub
-                    </span>
-                </button>
-            </div>
+      <div class="grid md:grid-cols-2 gap-8 mt-10">
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
+          <h3 class="text-lg font-semibold mb-2">How does MoC differ from MoE?</h3>
+          <p class="text-text-secondary text-sm">
+            MoE routes tokens to k experts and sums their outputs. MoC adds two steps:
+            router contextualization (self-attn over all expert outputs) and collaborative fusion (cross-attn among selected experts).
+          </p>
         </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="py-8 border-t border-gray-700">
-        <div class="container mx-auto px-6 text-center">
-            <p class="text-text-secondary">
-                A project by
-                <a href="https://www.linkedin.com/in/francisco-antonio-0434aa284/" target="_blank" class="text-accent-blue hover:text-accent-blue/80 transition-colors">
-                    Francisco
-                </a>
-            </p>
-            <p class="text-sm text-gray-500 mt-2">© 2025 LunarisCodex-MoC. All rights reserved.</p>
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
+          <h3 class="text-lg font-semibold mb-2">Is compute higher than MoE?</h3>
+          <p class="text-text-secondary text-sm">
+            Yes, training compute increases since all experts pre-analyze tokens. This trade-off aims for richer collaboration and better specialization.
+          </p>
         </div>
-    </footer>
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
+          <h3 class="text-lg font-semibold mb-2">Does it support generation with kv-cache?</h3>
+          <p class="text-text-secondary text-sm">
+            Yes. The LunarisCodex model includes past_key_values handling and a generate() method for efficient incremental decoding.
+          </p>
+        </div>
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
+          <h3 class="text-lg font-semibold mb-2">Can I disable MoC and use standard FFN?</h3>
+          <p class="text-text-secondary text-sm">
+            Set n_experts to 0 or None in config to use a standard FeedForward module inside each block.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <script>
-        // Mobile menu toggle
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
+  <!-- Code / Repository -->
+  <section id="code" class="py-20">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <h2 class="text-3xl md:text-4xl font-mono font-bold fade-in">Source Code & Repository</h2>
+      <div class="accent-line mx-auto fade-in"></div>
 
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
+      <div class="max-w-2xl mx-auto mt-10 fade-in">
+        <p class="text-lg text-text-secondary">
+          Explore the full implementation, including the CollaborativeExpertsModule,
+          optimized expert layer, training utilities, and examples.
+        </p>
+        <div class="flex items-center justify-center gap-3 mt-8">
+          <a href="https://github.com/MeryylleA/lunariscodex-MoC" target="_blank"
+             class="bg-accent-blue text-white font-semibold px-6 py-3 rounded-lg hover:opacity-90 transition glow">
+            View Repository
+          </a>
+          <a href="https://github.com/MeryylleA/lunariscodex-MoC" target="_blank"
+             class="px-6 py-3 rounded-lg border border-white/10 text-text-secondary hover:text-accent-green hover:border-accent-green transition">
+            github.com/MeryylleA/lunariscodex-MoC
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-10 border-t border-white/5">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <div class="text-sm text-text-secondary">
+        A project by
+        <a href="https://www.linkedin.com/in/francisco-antonio-0434aa284/" target="_blank" class="underline hover:text-accent-blue">Francisco</a>.
+        Built around a Mixture of Collaborative Experts for Llama-style LMs.
+      </div>
+      <div class="text-xs text-muted mt-2">© 2025 LunarisCodex-MoC. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    // Mobile menu
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuButton?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+    mobileMenu?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+
+    // Fade-in on scroll
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // Copy buttons
+    function attachCopyHandlers() {
+      document.querySelectorAll('.code-block').forEach(block => {
+        const btn = block.querySelector('.copy-btn');
+        if (!btn) return;
+        btn.addEventListener('click', async () => {
+          const code = block.querySelector('pre')?.innerText || '';
+          try {
+            await navigator.clipboard.writeText(code);
+            const old = btn.textContent;
+            btn.textContent = 'Copied';
+            setTimeout(() => btn.textContent = old, 1200);
+          } catch {
+            btn.textContent = 'Failed';
+            setTimeout(() => btn.textContent = 'Copy', 1200);
+          }
         });
-
-        // Close mobile menu when clicking on a link
-        const mobileLinks = mobileMenu.querySelectorAll('a');
-        mobileLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.add('hidden');
-            });
-        });
-
-        // Fade in animation on scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.fade-in').forEach(el => {
-            observer.observe(el);
-        });
-    </script>
+      });
+    }
+    attachCopyHandlers();
+  </script>
 </body>
 </html>
