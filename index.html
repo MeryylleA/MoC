@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>LunarisCodex-MoC — Mixture of Collaborative Experts</title>
-
   <!-- SEO / Social previews -->
   <meta name="description" content="LunarisCodex-MoC is a Llama-style language model featuring a Mixture of Collaborative Experts (MoC): contextualized routing + expert collaboration via cross-attention."/>
   <meta property="og:title" content="LunarisCodex-MoC — Mixture of Collaborative Experts"/>
@@ -12,12 +11,12 @@
   <meta property="og:type" content="website"/>
   <meta property="og:url" content="https://github.com/MeryylleA/lunariscodex-MoC"/>
   <meta name="twitter:card" content="summary_large_image"/>
-
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -25,14 +24,14 @@
       theme: {
         extend: {
           colors: {
-            'dark-bg': '#0f172a',         /* Slate-900 */
-            'dark-elev': '#111827',       /* Gray-900 */
-            'dark-card': '#1f2937',       /* Gray-800 */
+            'dark-bg': '#0a0e1a',         /* Darker background */
+            'dark-elev': '#0f1623',       /* Slightly lighter */
+            'dark-card': '#151b2d',       /* Card background */
             'muted': '#94a3b8',           /* Slate-400 */
-            'accent-blue': '#60a5fa',
-            'accent-green': '#34d399',
-            'accent-orange': '#fb923c',
-            'accent-purple': '#a78bfa',
+            'accent-blue': '#3b82f6',
+            'accent-green': '#10b981',
+            'accent-orange': '#f97316',
+            'accent-purple': '#8b5cf6',
             'text-primary': '#f8fafc',
             'text-secondary': '#cbd5e1'
           },
@@ -41,151 +40,199 @@
             'mono': ['JetBrains Mono', 'monospace']
           },
           boxShadow: {
-            'soft': '0 10px 30px rgba(0,0,0,0.25)',
+            'soft': '0 10px 30px rgba(0,0,0,0.3)',
+            'glow': '0 0 20px rgba(59, 130, 246, 0.3)',
+            'card': '0 4px 20px rgba(0, 0, 0, 0.2)',
             'ring': '0 0 0 1px rgba(255,255,255,0.05) inset'
           },
           backdropBlur: {
             xs: '2px',
+          },
+          animation: {
+            'float': 'float 5s ease-in-out infinite',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'fade-in': 'fadeIn 0.8s ease forwards',
+            'slide-up': 'slideUp 0.6s ease forwards',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' }
+            },
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' }
+            },
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
+            }
           }
         }
       }
     }
   </script>
-
   <style>
     html { scroll-behavior: smooth; }
-    .fade-in { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+    .fade-in { opacity: 0; transform: translateY(16px); transition: opacity .8s ease, transform .8s ease; }
     .fade-in.visible { opacity: 1; transform: translateY(0); }
-    .glow { box-shadow: 0 0 60px rgba(96,165,250,.15); }
-    .grad-hero { background: radial-gradient(1200px 600px at 50% -50%, rgba(96,165,250,.18), rgba(0,0,0,0)); }
-    .code-block { background: #0b1220; border: 1px solid #1e293b; border-radius: .5rem; padding: 1rem; overflow-x: auto; position: relative; }
-    .code-title { position: absolute; top: 0; right: 0; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: #64748b; padding: .35rem .5rem; }
-    .copy-btn { position: absolute; top: .5rem; right: .5rem; background: #111827; border: 1px solid #374151; color: #cbd5e1; font-size: .75rem; padding: .25rem .5rem; border-radius: .375rem; opacity: .9; }
-    .copy-btn:hover { opacity: 1; }
-    .accent-line { background: linear-gradient(90deg, #60a5fa, #34d399, #a78bfa); height: 3px; width: 70px; margin: 1rem 0 0; border-radius: 9999px; }
-    .svg-animate { animation: float 5s ease-in-out infinite; }
-    @keyframes float { 0%,100%{ transform: translateY(0)} 50%{ transform: translateY(-8px)} }
-    .badge { font-size: .65rem; border: 1px solid #334155; background: rgba(2,6,23,.6); padding: .25rem .5rem; border-radius: 9999px; }
-    .pill { background: rgba(15,23,42,.6); border: 1px solid #334155; border-radius: 9999px; padding: .35rem .65rem; font-size: .8rem; color: #e5e7eb; }
+    .glow { box-shadow: 0 0 60px rgba(59,130,246,.2); }
+    .grad-hero { background: radial-gradient(1200px 600px at 50% -50%, rgba(59,130,246,.15), rgba(0,0,0,0)); }
+    .code-block { background: #0d1117; border: 1px solid #30363d; border-radius: .75rem; padding: 1.25rem; overflow-x: auto; position: relative; transition: all 0.3s ease; }
+    .code-block:hover { border-color: #3b82f6; box-shadow: 0 0 15px rgba(59,130,246,0.15); }
+    .code-title { position: absolute; top: 0; right: 0; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: #8b949e; padding: .35rem .5rem; }
+    .copy-btn { position: absolute; top: .75rem; right: .75rem; background: #161b22; border: 1px solid #30363d; color: #c9d1d9; font-size: .75rem; padding: .35rem .65rem; border-radius: .375rem; opacity: 0; transition: all 0.2s ease; }
+    .code-block:hover .copy-btn { opacity: 1; }
+    .copy-btn:hover { background: #21262d; border-color: #3b82f6; color: #f8fafc; }
+    .accent-line { background: linear-gradient(90deg, #3b82f6, #10b981, #8b5cf6); height: 4px; width: 80px; margin: 1rem 0 0; border-radius: 9999px; }
+    .svg-animate { animation: float 6s ease-in-out infinite; }
+    @keyframes float { 0%,100%{ transform: translateY(0)} 50%{ transform: translateY(-10px)} }
+    .badge { font-size: .7rem; border: 1px solid #30363d; background: rgba(13,17,23,.7); padding: .3rem .65rem; border-radius: 9999px; transition: all 0.2s ease; }
+    .badge:hover { border-color: #3b82f6; transform: translateY(-2px); }
+    .pill { background: rgba(13,17,23,.7); border: 1px solid #30363d; border-radius: 9999px; padding: .4rem .75rem; font-size: .85rem; color: #e5e7eb; transition: all 0.2s ease; }
+    .pill:hover { border-color: #3b82f6; color: #f8fafc; transform: translateY(-2px); }
+    .nav-link { position: relative; transition: color 0.3s ease; }
+    .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: #3b82f6; transition: width 0.3s ease; }
+    .nav-link:hover::after { width: 100%; }
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.3); border-color: rgba(59,130,246,0.3); }
+    .gradient-text { background: linear-gradient(90deg, #3b82f6, #10b981, #8b5cf6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .expert-card { border: 1px solid transparent; transition: all 0.3s ease; }
+    .expert-card:hover { border-color: rgba(59,130,246,0.3); }
+    .section-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(59,130,246,0.3), transparent); margin: 3rem 0; }
+    .tab-button { transition: all 0.2s ease; }
+    .tab-button.active { background: rgba(59,130,246,0.2); border-color: #3b82f6; }
+    .scroll-indicator { animation: bounce 2s infinite; }
+    @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
   </style>
 </head>
-
 <body class="bg-dark-bg text-text-primary font-sans antialiased">
-
   <!-- Header -->
-  <header class="fixed top-0 inset-x-0 z-50 bg-dark-bg/75 backdrop-blur-xs border-b border-white/5">
+  <header class="fixed top-0 inset-x-0 z-50 bg-dark-bg/80 backdrop-blur-md border-b border-white/5">
     <nav class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-      <a href="#" class="flex items-center space-x-3">
-        <span class="w-2.5 h-2.5 rounded-full bg-accent-blue"></span>
-        <span class="font-mono font-semibold tracking-wide">LunarisCodex-MoC</span>
+      <a href="#" class="flex items-center space-x-3 group">
+        <div class="w-3 h-3 rounded-full bg-accent-blue group-hover:animate-pulse"></div>
+        <span class="font-mono font-semibold tracking-wide text-lg">LunarisCodex-MoC</span>
       </a>
       <div class="hidden md:flex items-center space-x-8 text-text-secondary">
-        <a class="hover:text-accent-blue" href="#overview">Overview</a>
-        <a class="hover:text-accent-blue" href="#architecture">Architecture</a>
-        <a class="hover:text-accent-blue" href="#optimizations">Optimizations</a>
-        <a class="hover:text-accent-blue" href="#analysis">Analysis</a>
-        <a class="hover:text-accent-blue" href="#quickstart">Quickstart</a>
-        <a class="hover:text-accent-blue" href="#faq">FAQ</a>
-        <a class="hover:text-accent-blue" href="#code">Code</a>
+        <a class="nav-link hover:text-accent-blue" href="#overview">Overview</a>
+        <a class="nav-link hover:text-accent-blue" href="#architecture">Architecture</a>
+        <a class="nav-link hover:text-accent-blue" href="#optimizations">Optimizations</a>
+        <a class="nav-link hover:text-accent-blue" href="#analysis">Analysis</a>
+        <a class="nav-link hover:text-accent-blue" href="#quickstart">Quickstart</a>
+        <a class="nav-link hover:text-accent-blue" href="#faq">FAQ</a>
+        <a class="nav-link hover:text-accent-blue" href="#code">Code</a>
       </div>
       <div class="hidden md:flex items-center space-x-3">
-        <a href="https://github.com/MeryylleA/lunariscodex-MoC" target="_blank" class="pill hover:border-accent-blue hover:text-accent-blue transition">GitHub</a>
+        <a href="https://github.com/MeryylleA/lunariscodex-MoC" target="_blank" class="pill hover:border-accent-blue hover:text-accent-blue transition flex items-center gap-2">
+          <i class="fab fa-github"></i> GitHub
+        </a>
       </div>
-      <button id="mobile-menu-button" class="md:hidden p-2 rounded-md border border-white/10 text-text-secondary">
+      <button id="mobile-menu-button" class="md:hidden p-2 rounded-md border border-white/10 text-text-secondary hover:bg-dark-card transition">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
     </nav>
     <!-- Mobile -->
     <div id="mobile-menu" class="hidden md:hidden bg-dark-bg border-t border-white/5">
       <div class="px-6 py-4 grid gap-3 text-text-secondary">
-        <a class="hover:text-accent-blue" href="#overview">Overview</a>
-        <a class="hover:text-accent-blue" href="#architecture">Architecture</a>
-        <a class="hover:text-accent-blue" href="#optimizations">Optimizations</a>
-        <a class="hover:text-accent-blue" href="#analysis">Analysis</a>
-        <a class="hover:text-accent-blue" href="#quickstart">Quickstart</a>
-        <a class="hover:text-accent-blue" href="#faq">FAQ</a>
-        <a class="hover:text-accent-blue" href="#code">Code</a>
+        <a class="hover:text-accent-blue py-2 transition" href="#overview">Overview</a>
+        <a class="hover:text-accent-blue py-2 transition" href="#architecture">Architecture</a>
+        <a class="hover:text-accent-blue py-2 transition" href="#optimizations">Optimizations</a>
+        <a class="hover:text-accent-blue py-2 transition" href="#analysis">Analysis</a>
+        <a class="hover:text-accent-blue py-2 transition" href="#quickstart">Quickstart</a>
+        <a class="hover:text-accent-blue py-2 transition" href="#faq">FAQ</a>
+        <a class="hover:text-accent-blue py-2 transition" href="#code">Code</a>
       </div>
     </div>
   </header>
-
+  
   <!-- Hero -->
-  <section class="relative pt-28 md:pt-32 pb-10 grad-hero">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="grid md:grid-cols-2 gap-10 items-center">
+  <section class="relative pt-28 md:pt-32 pb-16 grad-hero overflow-hidden">
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute -top-40 -right-40 w-80 h-80 bg-accent-blue/10 rounded-full filter blur-3xl animate-pulse-slow"></div>
+      <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-accent-purple/10 rounded-full filter blur-3xl animate-pulse-slow"></div>
+    </div>
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+      <div class="grid md:grid-cols-2 gap-12 items-center">
         <div class="fade-in">
-          <div class="inline-flex items-center gap-2 mb-4">
-            <span class="badge">Llama-style LM</span>
-            <span class="badge">Mixture of Collaborative Experts</span>
-            <span class="badge">PyTorch</span>
+          <div class="inline-flex flex-wrap items-center gap-3 mb-6">
+            <span class="badge"><i class="fas fa-microchip mr-1"></i> Llama-style LM</span>
+            <span class="badge"><i class="fas fa-network-wired mr-1"></i> Mixture of Collaborative Experts</span>
+            <span class="badge"><i class="fab fa-python mr-1"></i> PyTorch</span>
           </div>
-          <h1 class="text-4xl md:text-6xl font-mono font-bold leading-[1.1] mb-4">
-            Experts that collaborate,<br class="hidden md:block"/> not compete.
+          <h1 class="text-4xl md:text-6xl font-mono font-bold leading-[1.1] mb-6">
+            Experts that <span class="gradient-text">collaborate</span>,<br class="hidden md:block"/> not compete.
           </h1>
-          <p class="text-lg md:text-xl text-text-secondary max-w-xl">
+          <p class="text-lg md:text-xl text-text-secondary max-w-xl mb-8 leading-relaxed">
             LunarisCodex-MoC replaces standard FFNs with a collaborative mixture-of-experts:
             contextualized routing across all experts and cross-attention fusion among the selected ones.
           </p>
-          <div class="flex flex-wrap items-center gap-3 mt-8">
-            <a href="https://github.com/MeryylleA/lunariscodex-MoC" target="_blank" class="bg-accent-blue text-white font-semibold px-5 py-3 rounded-lg hover:opacity-90 transition glow">
-              Star on GitHub
+          <div class="flex flex-wrap items-center gap-4">
+            <a href="https://github.com/MeryylleA/lunariscodex-MoC" target="_blank" class="bg-accent-blue text-white font-semibold px-6 py-3.5 rounded-lg hover:opacity-90 transition glow flex items-center gap-2">
+              <i class="fab fa-github"></i> Star on GitHub
             </a>
-            <a href="#quickstart" class="px-5 py-3 rounded-lg border border-white/10 text-text-secondary hover:text-accent-green hover:border-accent-green transition">
-              Get Started
+            <a href="#quickstart" class="px-6 py-3.5 rounded-lg border border-white/10 text-text-secondary hover:text-accent-green hover:border-accent-green transition flex items-center gap-2">
+              <i class="fas fa-rocket"></i> Get Started
             </a>
-            <span class="text-sm text-muted ml-1">Maintained by Francisco • v1.0 • Jul 2025</span>
+          </div>
+          <div class="mt-6 text-sm text-muted flex items-center gap-2">
+            <i class="fas fa-user-circle"></i> Maintained by Francisco • 
+            <span class="pill text-xs">v1.0</span> • 
+            <span class="pill text-xs">Jul 2025</span>
           </div>
         </div>
-
         <div class="fade-in">
-          <div class="bg-dark-card border border-white/5 rounded-xl p-4 shadow-soft">
-            <div class="text-sm text-muted mb-2 px-1">High-level flow</div>
+          <div class="bg-dark-card border border-white/5 rounded-xl p-6 shadow-card overflow-hidden">
+            <div class="text-sm text-muted mb-3 px-1 flex items-center justify-between">
+              <span>High-level flow</span>
+              <span class="text-xs px-2 py-1 bg-dark-bg rounded-full">Interactive</span>
+            </div>
             <!-- Main Architecture Diagram -->
             <div class="svg-animate">
               <svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
-                <rect width="1000" height="600" fill="#0b1220" rx="12"/>
-                <circle cx="100" cy="300" r="30" fill="#60a5fa" opacity="0.85"/>
+                <rect width="1000" height="600" fill="#0d1117" rx="12"/>
+                <circle cx="100" cy="300" r="30" fill="#3b82f6" opacity="0.85"/>
                 <text x="100" y="305" text-anchor="middle" fill="white" font-family="monospace" font-size="14">x</text>
-                <path d="M130 300 L 200 300" stroke="#60a5fa" stroke-width="2" marker-end="url(#ah)"/>
+                <path d="M130 300 L 200 300" stroke="#3b82f6" stroke-width="2" marker-end="url(#ah)"/>
                 <g>
-                  <rect x="220" y="100" width="60" height="40" fill="#34d399" rx="6" opacity="0.85"/>
+                  <rect x="220" y="100" width="60" height="40" fill="#10b981" rx="6" opacity="0.85"/>
                   <text x="250" y="125" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₁</text>
-                  <rect x="220" y="170" width="60" height="40" fill="#34d399" rx="6" opacity="0.85"/>
+                  <rect x="220" y="170" width="60" height="40" fill="#10b981" rx="6" opacity="0.85"/>
                   <text x="250" y="195" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₂</text>
-                  <rect x="220" y="240" width="60" height="40" fill="#34d399" rx="6" opacity="0.85"/>
+                  <rect x="220" y="240" width="60" height="40" fill="#10b981" rx="6" opacity="0.85"/>
                   <text x="250" y="265" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₃</text>
-                  <rect x="220" y="310" width="60" height="40" fill="#34d399" rx="6" opacity="0.85"/>
+                  <rect x="220" y="310" width="60" height="40" fill="#10b981" rx="6" opacity="0.85"/>
                   <text x="250" y="335" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₄</text>
-                  <rect x="220" y="380" width="60" height="40" fill="#34d399" rx="6" opacity="0.85"/>
+                  <rect x="220" y="380" width="60" height="40" fill="#10b981" rx="6" opacity="0.85"/>
                   <text x="250" y="405" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₅</text>
                   <text x="250" y="460" text-anchor="middle" fill="#cbd5e1" font-family="monospace" font-size="14">N Experts</text>
                 </g>
-                <path d="M 280 120 L 350 200" stroke="#34d399" stroke-width="1.5" opacity="0.6"/>
-                <path d="M 280 190 L 350 220" stroke="#34d399" stroke-width="1.5" opacity="0.6"/>
-                <path d="M 280 260 L 350 240" stroke="#34d399" stroke-width="1.5" opacity="0.6"/>
-                <path d="M 280 330 L 350 260" stroke="#34d399" stroke-width="1.5" opacity="0.6"/>
-                <path d="M 280 400 L 350 280" stroke="#34d399" stroke-width="1.5" opacity="0.6"/>
-                <rect x="350" y="200" width="140" height="110" fill="#fb923c" rx="12" opacity="0.95"/>
+                <path d="M 280 120 L 350 200" stroke="#10b981" stroke-width="1.5" opacity="0.6"/>
+                <path d="M 280 190 L 350 220" stroke="#10b981" stroke-width="1.5" opacity="0.6"/>
+                <path d="M 280 260 L 350 240" stroke="#10b981" stroke-width="1.5" opacity="0.6"/>
+                <path d="M 280 330 L 350 260" stroke="#10b981" stroke-width="1.5" opacity="0.6"/>
+                <path d="M 280 400 L 350 280" stroke="#10b981" stroke-width="1.5" opacity="0.6"/>
+                <rect x="350" y="200" width="140" height="110" fill="#f97316" rx="12" opacity="0.95"/>
                 <text x="420" y="240" text-anchor="middle" fill="white" font-family="monospace" font-size="12">Router</text>
                 <text x="420" y="258" text-anchor="middle" fill="white" font-family="monospace" font-size="12">Contextualization</text>
-                <path d="M 490 255 L 540 255" stroke="#fb923c" stroke-width="2" marker-end="url(#ah)"/>
-                <circle cx="570" cy="255" r="26" fill="#a78bfa" opacity="0.95"/>
+                <path d="M 490 255 L 540 255" stroke="#f97316" stroke-width="2" marker-end="url(#ah)"/>
+                <circle cx="570" cy="255" r="26" fill="#8b5cf6" opacity="0.95"/>
                 <text x="570" y="260" text-anchor="middle" fill="white" font-family="monospace" font-size="12">Top-k</text>
                 <g>
-                  <rect x="620" y="180" width="60" height="40" fill="#a78bfa" rx="6" opacity="0.95"/>
+                  <rect x="620" y="180" width="60" height="40" fill="#8b5cf6" rx="6" opacity="0.95"/>
                   <text x="650" y="205" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₁</text>
-                  <rect x="620" y="280" width="60" height="40" fill="#a78bfa" rx="6" opacity="0.95"/>
+                  <rect x="620" y="280" width="60" height="40" fill="#8b5cf6" rx="6" opacity="0.95"/>
                   <text x="650" y="305" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₃</text>
                   <text x="650" y="350" text-anchor="middle" fill="#cbd5e1" font-family="monospace" font-size="14">k Selected</text>
                 </g>
-                <path d="M 680 200 L 750 230" stroke="#a78bfa" stroke-width="2"/>
-                <path d="M 680 300 L 750 270" stroke="#a78bfa" stroke-width="2"/>
+                <path d="M 680 200 L 750 230" stroke="#8b5cf6" stroke-width="2"/>
+                <path d="M 680 300 L 750 270" stroke="#8b5cf6" stroke-width="2"/>
                 <rect x="750" y="200" width="140" height="110" fill="#ef4444" rx="12" opacity="0.95"/>
                 <text x="820" y="240" text-anchor="middle" fill="white" font-family="monospace" font-size="12">Collaborative</text>
                 <text x="820" y="258" text-anchor="middle" fill="white" font-family="monospace" font-size="12">Fusion</text>
                 <text x="820" y="276" text-anchor="middle" fill="white" font-family="monospace" font-size="10">(Cross-Attention)</text>
                 <path d="M 890 255 L 930 255" stroke="#ef4444" stroke-width="2" marker-end="url(#ah)"/>
-                <circle cx="955" cy="255" r="30" fill="#60a5fa" opacity="0.85"/>
+                <circle cx="955" cy="255" r="30" fill="#3b82f6" opacity="0.85"/>
                 <text x="955" y="260" text-anchor="middle" fill="white" font-family="monospace" font-size="14">y</text>
                 <defs>
                   <marker id="ah" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
@@ -195,313 +242,418 @@
               </svg>
             </div>
           </div>
-          <div class="mt-4 text-sm text-muted">
-            Source: <a class="underline hover:text-accent-blue" href="https://github.com/MeryylleA/lunariscodex-MoC" target="_blank">github.com/MeryylleA/lunariscodex-MoC</a>
+          <div class="mt-4 text-sm text-muted flex items-center justify-center">
+            <i class="fas fa-link mr-2"></i>
+            <a class="underline hover:text-accent-blue transition" href="https://github.com/MeryylleA/lunariscodex-MoC" target="_blank">github.com/MeryylleA/lunariscodex-MoC</a>
           </div>
         </div>
       </div>
+      <div class="flex justify-center mt-12 scroll-indicator">
+        <a href="#overview" class="text-muted hover:text-accent-blue transition">
+          <i class="fas fa-chevron-down text-xl"></i>
+        </a>
+      </div>
     </div>
   </section>
-
+  
   <!-- Overview -->
   <section id="overview" class="py-20">
     <div class="max-w-7xl mx-auto px-6">
-      <h2 class="text-3xl md:text-4xl font-mono font-bold fade-in">The Core Concept: An Analogy</h2>
-      <div class="accent-line fade-in"></div>
-
-      <div class="grid md:grid-cols-2 gap-8 mt-10">
-        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
-          <div class="flex items-center mb-4">
-            <div class="w-10 h-10 rounded-full bg-accent-orange/20 border border-accent-orange/40 flex items-center justify-center mr-3">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-mono font-bold fade-in">The Core Concept: An Analogy</h2>
+        <div class="accent-line mx-auto fade-in"></div>
+      </div>
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-7 fade-in card-hover expert-card">
+          <div class="flex items-center mb-5">
+            <div class="w-12 h-12 rounded-full bg-accent-orange/20 border border-accent-orange/40 flex items-center justify-center mr-4">
               <span class="text-accent-orange font-semibold">MoE</span>
             </div>
             <h3 class="text-2xl font-bold">Standard MoE</h3>
           </div>
-          <h4 class="text-accent-orange font-semibold mb-2">The Overloaded President</h4>
-          <ul class="text-text-secondary space-y-2">
-            <li>Quick decision based only on the token.</li>
-            <li>Selects experts without seeing their opinions.</li>
-            <li>Experts work in isolation, zero exchange.</li>
-            <li>Outputs merged mechanically (weighted sum).</li>
-            <li>Often incoherent, contradictory behavior.</li>
+          <h4 class="text-accent-orange font-semibold mb-3 flex items-center">
+            <i class="fas fa-user-tie mr-2"></i> The Overloaded President
+          </h4>
+          <ul class="text-text-secondary space-y-3">
+            <li class="flex items-start">
+              <i class="fas fa-check-circle text-accent-orange mt-1 mr-2"></i>
+              <span>Quick decision based only on the token.</span>
+            </li>
+            <li class="flex items-start">
+              <i class="fas fa-check-circle text-accent-orange mt-1 mr-2"></i>
+              <span>Selects experts without seeing their opinions.</span>
+            </li>
+            <li class="flex items-start">
+              <i class="fas fa-check-circle text-accent-orange mt-1 mr-2"></i>
+              <span>Experts work in isolation, zero exchange.</span>
+            </li>
+            <li class="flex items-start">
+              <i class="fas fa-check-circle text-accent-orange mt-1 mr-2"></i>
+              <span>Outputs merged mechanically (weighted sum).</span>
+            </li>
+            <li class="flex items-start">
+              <i class="fas fa-check-circle text-accent-orange mt-1 mr-2"></i>
+              <span>Often incoherent, contradictory behavior.</span>
+            </li>
           </ul>
         </div>
-
-        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
-          <div class="flex items-center mb-4">
-            <div class="w-10 h-10 rounded-full bg-accent-green/20 border border-accent-green/40 flex items-center justify-center mr-3">
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-7 fade-in card-hover expert-card">
+          <div class="flex items-center mb-5">
+            <div class="w-12 h-12 rounded-full bg-accent-green/20 border border-accent-green/40 flex items-center justify-center mr-4">
               <span class="text-accent-green font-semibold">MoC</span>
             </div>
             <h3 class="text-2xl font-bold">Mixture of Collaborative Experts</h3>
           </div>
-          <h4 class="text-accent-green font-semibold mb-2">The Wise President</h4>
-          <ul class="text-text-secondary space-y-2">
-            <li>All experts do a quick pre-analysis.</li>
-            <li>Router contextualizes by attending over every expert’s view.</li>
-            <li>Informed top-k selection with full context.</li>
-            <li>Selected experts collaborate via cross-attention.</li>
-            <li>Cohesive, integrated final representation.</li>
+          <h4 class="text-accent-green font-semibold mb-3 flex items-center">
+            <i class="fas fa-user-graduate mr-2"></i> The Wise President
+          </h4>
+          <ul class="text-text-secondary space-y-3">
+            <li class="flex items-start">
+              <i class="fas fa-check-circle text-accent-green mt-1 mr-2"></i>
+              <span>All experts do a quick pre-analysis.</span>
+            </li>
+            <li class="flex items-start">
+              <i class="fas fa-check-circle text-accent-green mt-1 mr-2"></i>
+              <span>Router contextualizes by attending over every expert's view.</span>
+            </li>
+            <li class="flex items-start">
+              <i class="fas fa-check-circle text-accent-green mt-1 mr-2"></i>
+              <span>Informed top-k selection with full context.</span>
+            </li>
+            <li class="flex items-start">
+              <i class="fas fa-check-circle text-accent-green mt-1 mr-2"></i>
+              <span>Selected experts collaborate via cross-attention.</span>
+            </li>
+            <li class="flex items-start">
+              <i class="fas fa-check-circle text-accent-green mt-1 mr-2"></i>
+              <span>Cohesive, integrated final representation.</span>
+            </li>
           </ul>
         </div>
       </div>
+      <div class="section-divider"></div>
     </div>
   </section>
-
+  
   <!-- Architecture -->
   <section id="architecture" class="py-20 bg-dark-elev/60">
     <div class="max-w-7xl mx-auto px-6">
-      <h2 class="text-3xl md:text-4xl font-mono font-bold fade-in">Architectural Deep Dive</h2>
-      <div class="accent-line fade-in"></div>
-
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-mono font-bold fade-in">Architectural Deep Dive</h2>
+        <div class="accent-line mx-auto fade-in"></div>
+      </div>
+      
+      <!-- Tabs for Architecture Sections -->
+      <div class="flex flex-wrap justify-center gap-2 mb-10">
+        <button class="tab-button px-4 py-2 rounded-lg border border-white/10 text-text-secondary active" data-tab="router-tab">
+          <i class="fas fa-random mr-2"></i> Router Contextualization
+        </button>
+        <button class="tab-button px-4 py-2 rounded-lg border border-white/10 text-text-secondary" data-tab="fusion-tab">
+          <i class="fas fa-project-diagram mr-2"></i> Collaborative Fusion
+        </button>
+        <button class="tab-button px-4 py-2 rounded-lg border border-white/10 text-text-secondary" data-tab="aux-tab">
+          <i class="fas fa-balance-scale mr-2"></i> Auxiliary Loss
+        </button>
+      </div>
+      
       <!-- Router Contextualization -->
-      <div class="grid md:grid-cols-2 gap-10 items-center mt-12">
-        <div class="fade-in">
-          <h3 class="text-2xl font-bold text-accent-orange mb-3">1) Router Contextualization</h3>
-          <p class="text-text-secondary mb-4">
-            Traditional MoE routers decide blindly from token embeddings. MoC first gathers
-            the outputs from all experts, then applies self-attention over these per-token expert vectors
-            to form a contextualized summary used for routing.
-          </p>
-          <div class="code-block">
-            <div class="code-title">CollaborativeExpertsModule.forward</div>
-            <button class="copy-btn" title="Copy">Copy</button>
+      <div id="router-tab" class="tab-content">
+        <div class="grid md:grid-cols-2 gap-10 items-center mt-8">
+          <div class="fade-in">
+            <h3 class="text-2xl font-bold text-accent-orange mb-4 flex items-center">
+              <i class="fas fa-random mr-3"></i> 1) Router Contextualization
+            </h3>
+            <p class="text-text-secondary mb-5 leading-relaxed">
+              Traditional MoE routers decide blindly from token embeddings. MoC first gathers
+              the outputs from all experts, then applies self-attention over these per-token expert vectors
+              to form a contextualized summary used for routing.
+            </p>
+            <div class="code-block">
+              <div class="code-title">CollaborativeExpertsModule.forward</div>
+              <button class="copy-btn" title="Copy"><i class="fas fa-copy"></i></button>
 <pre><code class="language-py"># Expert parallelism → (B, S, n_experts, d_model)
 expert_outputs = self._get_expert_outputs(x)
-
 # Flatten per token for attention → (B*S, n_experts, d_model)
 expert_flat = expert_outputs.view(-1, self.n_experts, self.d_model)
-
 # Contextualize via self-attention (uses flash kernels if available)
 with torch.backends.cuda.sdp_kernel(enable_flash=True):
     contextualized_experts, _ = self.router_self_attn(
         expert_flat, expert_flat, expert_flat
     )
-
 # Residual + norm
 contextualized_experts = self.router_norm(contextualized_experts + expert_flat)
-
 # Routing logits from contextualized summary
 token_summary = contextualized_experts.mean(dim=1)
 routing_logits = self.router_gate(token_summary).view(B, S, self.n_experts)</code></pre>
+            </div>
+            <p class="text-sm text-muted mt-4 flex items-center">
+              <i class="fas fa-map-marker-alt mr-2"></i>
+              Mapping: model_moe.py → CollaborativeExpertsModule.router_self_attn + router_gate
+            </p>
           </div>
-          <p class="text-sm text-muted mt-3">
-            Mapping: model_moe.py → CollaborativeExpertsModule.router_self_attn + router_gate
-          </p>
-        </div>
-        <div class="fade-in">
-          <div class="bg-dark-card border border-white/5 rounded-xl p-6">
-            <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-              <rect width="400" height="300" fill="#0b1220" rx="12"/>
-              <rect x="20" y="50" width="50" height="30" fill="#34d399" rx="5" opacity="0.85"/>
-              <text x="45" y="70" text-anchor="middle" fill="white" font-family="monospace" font-size="10">E₁</text>
-              <rect x="20" y="100" width="50" height="30" fill="#34d399" rx="5" opacity="0.85"/>
-              <text x="45" y="120" text-anchor="middle" fill="white" font-family="monospace" font-size="10">E₂</text>
-              <rect x="20" y="150" width="50" height="30" fill="#34d399" rx="5" opacity="0.85"/>
-              <text x="45" y="170" text-anchor="middle" fill="white" font-family="monospace" font-size="10">E₃</text>
-              <circle cx="150" cy="150" r="42" fill="#fb923c" opacity="0.95"/>
-              <text x="150" y="145" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Self</text>
-              <text x="150" y="160" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Attention</text>
-              <path d="M 70 65 L 110 130" stroke="#34d399" stroke-width="1.5"/>
-              <path d="M 70 115 L 110 140" stroke="#34d399" stroke-width="1.5"/>
-              <path d="M 70 165 L 110 160" stroke="#34d399" stroke-width="1.5"/>
-              <rect x="250" y="125" width="110" height="50" fill="#a78bfa" rx="6" opacity="0.95"/>
-              <text x="305" y="145" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Contextualized</text>
-              <text x="305" y="160" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Experts</text>
-              <path d="M 192 150 L 250 150" stroke="#fb923c" stroke-width="2" marker-end="url(#ah2)"/>
-              <defs>
-                <marker id="ah2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                  <polygon points="0 0, 10 3.5, 0 7" fill="#cbd5e1"/>
-                </marker>
-              </defs>
-            </svg>
+          <div class="fade-in">
+            <div class="bg-dark-card border border-white/5 rounded-xl p-6 shadow-card">
+              <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="300" fill="#0d1117" rx="12"/>
+                <rect x="20" y="50" width="50" height="30" fill="#10b981" rx="5" opacity="0.85"/>
+                <text x="45" y="70" text-anchor="middle" fill="white" font-family="monospace" font-size="10">E₁</text>
+                <rect x="20" y="100" width="50" height="30" fill="#10b981" rx="5" opacity="0.85"/>
+                <text x="45" y="120" text-anchor="middle" fill="white" font-family="monospace" font-size="10">E₂</text>
+                <rect x="20" y="150" width="50" height="30" fill="#10b981" rx="5" opacity="0.85"/>
+                <text x="45" y="170" text-anchor="middle" fill="white" font-family="monospace" font-size="10">E₃</text>
+                <circle cx="150" cy="150" r="42" fill="#f97316" opacity="0.95"/>
+                <text x="150" y="145" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Self</text>
+                <text x="150" y="160" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Attention</text>
+                <path d="M 70 65 L 110 130" stroke="#10b981" stroke-width="1.5"/>
+                <path d="M 70 115 L 110 140" stroke="#10b981" stroke-width="1.5"/>
+                <path d="M 70 165 L 110 160" stroke="#10b981" stroke-width="1.5"/>
+                <rect x="250" y="125" width="110" height="50" fill="#8b5cf6" rx="6" opacity="0.95"/>
+                <text x="305" y="145" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Contextualized</text>
+                <text x="305" y="160" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Experts</text>
+                <path d="M 192 150 L 250 150" stroke="#f97316" stroke-width="2" marker-end="url(#ah2)"/>
+                <defs>
+                  <marker id="ah2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="#cbd5e1"/>
+                  </marker>
+                </defs>
+              </svg>
+            </div>
           </div>
         </div>
       </div>
-
+      
       <!-- Collaborative Fusion -->
-      <div class="grid md:grid-cols-2 gap-10 items-center mt-16">
-        <div class="order-2 md:order-1 fade-in">
-          <div class="bg-dark-card border border-white/5 rounded-xl p-6">
-            <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-              <rect width="400" height="300" fill="#0b1220" rx="12"/>
-              <rect x="30" y="80" width="60" height="40" fill="#a78bfa" rx="6" opacity="0.95"/>
-              <text x="60" y="105" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₁</text>
-              <rect x="30" y="180" width="60" height="40" fill="#a78bfa" rx="6" opacity="0.95"/>
-              <text x="60" y="205" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₂</text>
-              <rect x="150" y="100" width="120" height="100" fill="#ef4444" rx="12" opacity="0.95"/>
-              <text x="210" y="140" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Cross</text>
-              <text x="210" y="155" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Attention</text>
-              <text x="210" y="170" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Fusion</text>
-              <path d="M 90 100 L 150 130" stroke="#a78bfa" stroke-width="2" marker-end="url(#ah3)"/>
-              <path d="M 150 140 L 90 110" stroke="#ef4444" stroke-width="1.5" marker-end="url(#ah3)"/>
-              <path d="M 90 200 L 150 170" stroke="#a78bfa" stroke-width="2" marker-end="url(#ah3)"/>
-              <path d="M 150 160 L 90 190" stroke="#ef4444" stroke-width="1.5" marker-end="url(#ah3)"/>
-              <rect x="300" y="125" width="80" height="50" fill="#60a5fa" rx="6" opacity="0.95"/>
-              <text x="340" y="145" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Refined</text>
-              <text x="340" y="160" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Output</text>
-              <path d="M 270 150 L 300 150" stroke="#ef4444" stroke-width="2" marker-end="url(#ah3)"/>
-              <defs>
-                <marker id="ah3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                  <polygon points="0 0, 10 3.5, 0 7" fill="#cbd5e1"/>
-                </marker>
-              </defs>
-            </svg>
+      <div id="fusion-tab" class="tab-content hidden">
+        <div class="grid md:grid-cols-2 gap-10 items-center mt-8">
+          <div class="order-2 md:order-1 fade-in">
+            <div class="bg-dark-card border border-white/5 rounded-xl p-6 shadow-card">
+              <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="300" fill="#0d1117" rx="12"/>
+                <rect x="30" y="80" width="60" height="40" fill="#8b5cf6" rx="6" opacity="0.95"/>
+                <text x="60" y="105" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₁</text>
+                <rect x="30" y="180" width="60" height="40" fill="#8b5cf6" rx="6" opacity="0.95"/>
+                <text x="60" y="205" text-anchor="middle" fill="white" font-family="monospace" font-size="12">E₂</text>
+                <rect x="150" y="100" width="120" height="100" fill="#ef4444" rx="12" opacity="0.95"/>
+                <text x="210" y="140" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Cross</text>
+                <text x="210" y="155" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Attention</text>
+                <text x="210" y="170" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Fusion</text>
+                <path d="M 90 100 L 150 130" stroke="#8b5cf6" stroke-width="2" marker-end="url(#ah3)"/>
+                <path d="M 150 140 L 90 110" stroke="#ef4444" stroke-width="1.5" marker-end="url(#ah3)"/>
+                <path d="M 90 200 L 150 170" stroke="#8b5cf6" stroke-width="2" marker-end="url(#ah3)"/>
+                <path d="M 150 160 L 90 190" stroke="#ef4444" stroke-width="1.5" marker-end="url(#ah3)"/>
+                <rect x="300" y="125" width="80" height="50" fill="#3b82f6" rx="6" opacity="0.95"/>
+                <text x="340" y="145" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Refined</text>
+                <text x="340" y="160" text-anchor="middle" fill="white" font-family="monospace" font-size="10">Output</text>
+                <path d="M 270 150 L 300 150" stroke="#ef4444" stroke-width="2" marker-end="url(#ah3)"/>
+                <defs>
+                  <marker id="ah3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="#cbd5e1"/>
+                  </marker>
+                </defs>
+              </svg>
+            </div>
           </div>
-        </div>
-        <div class="order-1 md:order-2 fade-in">
-          <h3 class="text-2xl font-bold text-accent-green mb-3">2) Collaborative Fusion</h3>
-          <p class="text-text-secondary mb-4">
-            After top-k selection, experts don’t get summed immediately. They first collaborate via cross-attention,
-            refine via a lightweight FFN, and only then contribute to the final weighted fusion.
-          </p>
-          <div class="code-block">
-            <div class="code-title">Selected experts collaborate</div>
-            <button class="copy-btn" title="Copy">Copy</button>
+          <div class="order-1 md:order-2 fade-in">
+            <h3 class="text-2xl font-bold text-accent-green mb-4 flex items-center">
+              <i class="fas fa-project-diagram mr-3"></i> 2) Collaborative Fusion
+            </h3>
+            <p class="text-text-secondary mb-5 leading-relaxed">
+              After top-k selection, experts don't get summed immediately. They first collaborate via cross-attention,
+              refine via a lightweight FFN, and only then contribute to the final weighted fusion.
+            </p>
+            <div class="code-block">
+              <div class="code-title">Selected experts collaborate</div>
+              <button class="copy-btn" title="Copy"><i class="fas fa-copy"></i></button>
 <pre><code># Top-k selection (temperature-scaled + softmax on k)
 selected_outputs, top_k_probs, routing_probs, top_k_idx = \
     self._efficient_expert_selection(routing_logits, expert_outputs)
-
 # Cross-attention within the k-selected experts (per token)
 refined_outputs, attn_weights = self._collaborative_fusion_checkpoint(selected_outputs)
-
 # Weighted sum by routing probs, then output projection
 final_output = torch.sum(refined_outputs * top_k_probs.unsqueeze(-1), dim=2)
 final_output = self.o_proj(final_output)</code></pre>
+            </div>
+            <p class="text-sm text-muted mt-4 flex items-center">
+              <i class="fas fa-map-marker-alt mr-2"></i>
+              Mapping: model_moe.py → CollaborativeExpertsModule.collab_cross_attn + collab_ffn + o_proj
+            </p>
           </div>
-          <p class="text-sm text-muted mt-3">
-            Mapping: model_moe.py → CollaborativeExpertsModule.collab_cross_attn + collab_ffn + o_proj
-          </p>
         </div>
       </div>
-
+      
       <!-- Auxiliary Loss -->
-      <div class="mt-16 fade-in">
-        <h3 class="text-2xl font-bold text-accent-blue mb-3">Advanced Auxiliary Loss</h3>
-        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6">
-          <p class="text-text-secondary mb-4">
-            Training stability and meaningful collaboration are encouraged by combining
-            a balance loss (uniform expert usage) and a diversity loss (high-entropy cross-attention patterns).
-          </p>
-          <div class="grid md:grid-cols-2 gap-5">
-            <div>
-              <h4 class="font-semibold text-accent-orange mb-2">Balance Loss</h4>
-              <p class="text-text-secondary text-sm">Minimize variance of expert usage from routing probabilities.</p>
+      <div id="aux-tab" class="tab-content hidden">
+        <div class="mt-8 fade-in">
+          <h3 class="text-2xl font-bold text-accent-blue mb-4 flex items-center">
+            <i class="fas fa-balance-scale mr-3"></i> Advanced Auxiliary Loss
+          </h3>
+          <div class="bg-dark-card/60 border border-white/5 rounded-xl p-7 shadow-card">
+            <p class="text-text-secondary mb-5 leading-relaxed">
+              Training stability and meaningful collaboration are encouraged by combining
+              a balance loss (uniform expert usage) and a diversity loss (high-entropy cross-attention patterns).
+            </p>
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+              <div class="bg-dark-bg/40 p-5 rounded-lg border border-white/5">
+                <h4 class="font-semibold text-accent-orange mb-3 flex items-center">
+                  <i class="fas fa-chart-pie mr-2"></i> Balance Loss
+                </h4>
+                <p class="text-text-secondary text-sm">Minimize variance of expert usage from routing probabilities.</p>
+              </div>
+              <div class="bg-dark-bg/40 p-5 rounded-lg border border-white/5">
+                <h4 class="font-semibold text-accent-green mb-3 flex items-center">
+                  <i class="fas fa-random mr-2"></i> Diversity Loss
+                </h4>
+                <p class="text-text-secondary text-sm">Maximize entropy of <em>attn_weights</em> from collaborative fusion.</p>
+              </div>
             </div>
-            <div>
-              <h4 class="font-semibold text-accent-green mb-2">Diversity Loss</h4>
-              <p class="text-text-secondary text-sm">Maximize entropy of <em>attn_weights</em> from collaborative fusion.</p>
-            </div>
-          </div>
-          <div class="code-block mt-4">
-            <div class="code-title">Auxiliary objective</div>
-            <button class="copy-btn" title="Copy">Copy</button>
+            <div class="code-block">
+              <div class="code-title">Auxiliary objective</div>
+              <button class="copy-btn" title="Copy"><i class="fas fa-copy"></i></button>
 <pre><code>expert_usage = routing_probs.mean(dim=(0, 1))         # (n_experts,)
 balance_loss = ((expert_usage - expert_usage.mean())**2).mean()
-
 diversity_loss = -torch.sum(attn_weights * torch.log(attn_weights + 1e-9), dim=-1).mean()
-
 aux_loss = 0.01 * diversity_loss + 0.01 * balance_loss
 loss = main_loss + aux_loss * aux_loss_weight</code></pre>
+            </div>
           </div>
         </div>
       </div>
+      
+      <div class="section-divider"></div>
     </div>
   </section>
-
+  
   <!-- Optimizations -->
   <section id="optimizations" class="py-20">
     <div class="max-w-7xl mx-auto px-6">
-      <h2 class="text-3xl md:text-4xl font-mono font-bold fade-in">Engineering Optimizations</h2>
-      <div class="accent-line fade-in"></div>
-      <div class="grid md:grid-cols-3 gap-6 mt-10">
-        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
-          <h3 class="text-xl font-semibold mb-2 text-accent-green">Expert Parallelism</h3>
-          <p class="text-text-secondary text-sm">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-mono font-bold fade-in">Engineering Optimizations</h2>
+        <div class="accent-line mx-auto fade-in"></div>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in card-hover">
+          <div class="w-12 h-12 rounded-full bg-accent-green/20 border border-accent-green/40 flex items-center justify-center mb-4">
+            <i class="fas fa-server text-accent-green"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-accent-green">Expert Parallelism</h3>
+          <p class="text-text-secondary text-sm mb-4">
             OptimizedExpertLayer batches all FFNs as tensors and performs parallel batched matmuls
             for gate/up/down projections. Dramatically reduces Python overhead and temp allocations.
           </p>
-          <div class="mt-4 text-xs text-muted">config: enable_expert_parallelism: true</div>
+          <div class="text-xs text-muted bg-dark-bg/40 p-2 rounded">
+            <i class="fas fa-cog mr-1"></i> config: enable_expert_parallelism: true
+          </div>
         </div>
-        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
-          <h3 class="text-xl font-semibold mb-2 text-accent-blue">Flash Attention</h3>
-          <p class="text-text-secondary text-sm">
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in card-hover">
+          <div class="w-12 h-12 rounded-full bg-accent-blue/20 border border-accent-blue/40 flex items-center justify-center mb-4">
+            <i class="fas fa-bolt text-accent-blue"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-accent-blue">Flash Attention</h3>
+          <p class="text-text-secondary text-sm mb-4">
             Router self-attention uses torch.backends.cuda.sdp_kernel(enable_flash=True) if available
             for improved performance and lower memory use.
           </p>
         </div>
-        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
-          <h3 class="text-xl font-semibold mb-2 text-accent-purple">Checkpointing & Fused Optim</h3>
-          <p class="text-text-secondary text-sm">
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in card-hover">
+          <div class="w-12 h-12 rounded-full bg-accent-purple/20 border border-accent-purple/40 flex items-center justify-center mb-4">
+            <i class="fas fa-memory text-accent-purple"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-accent-purple">Checkpointing & Fused Optim</h3>
+          <p class="text-text-secondary text-sm mb-4">
             Optional gradient checkpointing around collaborative fusion; AdamW uses 'fused' variant on CUDA when available.
           </p>
-          <div class="mt-4 text-xs text-muted">config: use_gradient_checkpointing: true</div>
+          <div class="text-xs text-muted bg-dark-bg/40 p-2 rounded">
+            <i class="fas fa-cog mr-1"></i> config: use_gradient_checkpointing: true
+          </div>
         </div>
       </div>
       <div class="grid md:grid-cols-3 gap-6 mt-6">
-        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
-          <h3 class="text-xl font-semibold mb-2 text-accent-orange">Memory Efficiency</h3>
-          <p class="text-text-secondary text-sm">
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in card-hover">
+          <div class="w-12 h-12 rounded-full bg-accent-orange/20 border border-accent-orange/40 flex items-center justify-center mb-4">
+            <i class="fas fa-compress-alt text-accent-orange"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-accent-orange">Memory Efficiency</h3>
+          <p class="text-text-secondary text-sm mb-4">
             Reduced intermediate allocations, in-place safe ops, and pre-allocated buffers for routing/usage stats.
           </p>
         </div>
-        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
-          <h3 class="text-xl font-semibold mb-2 text-accent-green">Active Params Accounting</h3>
-          <p class="text-text-secondary text-sm">
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in card-hover">
+          <div class="w-12 h-12 rounded-full bg-accent-green/20 border border-accent-green/40 flex items-center justify-center mb-4">
+            <i class="fas fa-calculator text-accent-green"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-accent-green">Active Params Accounting</h3>
+          <p class="text-text-secondary text-sm mb-4">
             Reports active parameters per forward (other + top_k experts × MoE layers), reflecting actual compute footprint.
           </p>
         </div>
-        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
-          <h3 class="text-xl font-semibold mb-2 text-accent-blue">Configurable & Modular</h3>
-          <p class="text-text-secondary text-sm">
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in card-hover">
+          <div class="w-12 h-12 rounded-full bg-accent-blue/20 border border-accent-blue/40 flex items-center justify-center mb-4">
+            <i class="fas fa-sliders-h text-accent-blue"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-accent-blue">Configurable & Modular</h3>
+          <p class="text-text-secondary text-sm mb-4">
             Easily switch between standard FFN and MoC; set n_experts, top_k, router_temperature, and aux loss weight.
           </p>
         </div>
       </div>
+      <div class="section-divider"></div>
     </div>
   </section>
-
+  
   <!-- Analysis -->
   <section id="analysis" class="py-20 bg-dark-elev/60">
     <div class="max-w-7xl mx-auto px-6">
-      <h2 class="text-3xl md:text-4xl font-mono font-bold fade-in">Technical Analysis</h2>
-      <div class="accent-line fade-in"></div>
-
-      <div class="grid md:grid-cols-3 gap-8 mt-10">
-        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-mono font-bold fade-in">Technical Analysis</h2>
+        <div class="accent-line mx-auto fade-in"></div>
+      </div>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in card-hover">
+          <div class="w-12 h-12 rounded-full bg-accent-orange/20 border border-accent-orange/40 flex items-center justify-center mb-4">
+            <i class="fas fa-tachometer-alt text-accent-orange"></i>
+          </div>
           <h3 class="text-xl font-semibold text-accent-orange mb-3">Compute Complexity</h3>
-          <div class="text-text-secondary text-sm space-y-1">
-            <p>Expert forward: O(B · S · n_experts · d_model²)</p>
-            <p>Router SA: O(B · S · n_experts² · d_model)</p>
-            <p>Collab (k): O(B · S · k² · d_model)</p>
-            <p class="mt-3 text-accent-orange">Trade-off: higher compute for richer collaboration.</p>
+          <div class="text-text-secondary text-sm space-y-2">
+            <p><i class="fas fa-angle-right mr-2 text-accent-orange"></i>Expert forward: O(B · S · n_experts · d_model²)</p>
+            <p><i class="fas fa-angle-right mr-2 text-accent-orange"></i>Router SA: O(B · S · n_experts² · d_model)</p>
+            <p><i class="fas fa-angle-right mr-2 text-accent-orange"></i>Collab (k): O(B · S · k² · d_model)</p>
+            <p class="mt-3 text-accent-orange font-medium">Trade-off: higher compute for richer collaboration.</p>
           </div>
         </div>
-        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in card-hover">
+          <div class="w-12 h-12 rounded-full bg-accent-green/20 border border-accent-green/40 flex items-center justify-center mb-4">
+            <i class="fas fa-thumbs-up text-accent-green"></i>
+          </div>
           <h3 class="text-xl font-semibold text-accent-green mb-3">Advantages</h3>
           <ul class="text-text-secondary text-sm space-y-2">
-            <li>Context-aware routing decisions</li>
-            <li>Experts refine outputs jointly (coherence)</li>
-            <li>Improved stability via residuals + norms</li>
-            <li>Aux loss promotes usage balance & diversity</li>
-            <li>Flexible and configurable</li>
+            <li><i class="fas fa-check-circle mr-2 text-accent-green"></i>Context-aware routing decisions</li>
+            <li><i class="fas fa-check-circle mr-2 text-accent-green"></i>Experts refine outputs jointly (coherence)</li>
+            <li><i class="fas fa-check-circle mr-2 text-accent-green"></i>Improved stability via residuals + norms</li>
+            <li><i class="fas fa-check-circle mr-2 text-accent-green"></i>Aux loss promotes usage balance & diversity</li>
+            <li><i class="fas fa-check-circle mr-2 text-accent-green"></i>Flexible and configurable</li>
           </ul>
         </div>
-        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in card-hover">
+          <div class="w-12 h-12 rounded-full bg-accent-blue/20 border border-accent-blue/40 flex items-center justify-center mb-4">
+            <i class="fas fa-balance-scale text-accent-blue"></i>
+          </div>
           <h3 class="text-xl font-semibold text-accent-blue mb-3">Trade-offs</h3>
           <ul class="text-text-secondary text-sm space-y-2">
-            <li>Compute cost > standard MoE</li>
-            <li>More architectural complexity</li>
-            <li>Additional hyperparameters to tune</li>
-            <li>Requires experimental validation</li>
+            <li><i class="fas fa-minus-circle mr-2 text-accent-blue"></i>Compute cost > standard MoE</li>
+            <li><i class="fas fa-minus-circle mr-2 text-accent-blue"></i>More architectural complexity</li>
+            <li><i class="fas fa-minus-circle mr-2 text-accent-blue"></i>Additional hyperparameters to tune</li>
+            <li><i class="fas fa-minus-circle mr-2 text-accent-blue"></i>Requires experimental validation</li>
           </ul>
         </div>
       </div>
-
+      
       <!-- Recommended Config -->
-      <div class="mt-12 fade-in">
-        <h3 class="text-2xl font-bold mb-4">Recommended Configuration</h3>
+      <div class="mt-16 fade-in">
+        <h3 class="text-2xl font-bold mb-6 flex items-center">
+          <i class="fas fa-cog mr-3 text-accent-purple"></i> Recommended Configuration
+        </h3>
         <div class="overflow-x-auto">
-          <table class="min-w-full bg-dark-card/60 border border-white/5 rounded-xl overflow-hidden">
+          <table class="min-w-full bg-dark-card/60 border border-white/5 rounded-xl overflow-hidden shadow-card">
             <thead class="bg-dark-bg/60">
               <tr>
                 <th class="px-6 py-3 text-left text-xs font-semibold text-text-secondary tracking-wider">Parameter</th>
@@ -510,32 +662,32 @@ loss = main_loss + aux_loss * aux_loss_weight</code></pre>
               </tr>
             </thead>
             <tbody class="divide-y divide-white/5">
-              <tr>
+              <tr class="hover:bg-dark-bg/30 transition">
                 <td class="px-6 py-4 text-sm font-mono">n_experts</td>
                 <td class="px-6 py-4 text-sm">8–16</td>
                 <td class="px-6 py-4 text-sm text-text-secondary">Capacity vs. compute balance</td>
               </tr>
-              <tr>
+              <tr class="hover:bg-dark-bg/30 transition">
                 <td class="px-6 py-4 text-sm font-mono">top_k</td>
                 <td class="px-6 py-4 text-sm">2–4</td>
                 <td class="px-6 py-4 text-sm text-text-secondary">Meaningful collaboration without heavy overhead</td>
               </tr>
-              <tr>
+              <tr class="hover:bg-dark-bg/30 transition">
                 <td class="px-6 py-4 text-sm font-mono">aux_loss_weight</td>
                 <td class="px-6 py-4 text-sm">1e-3 – 1e-2</td>
                 <td class="px-6 py-4 text-sm text-text-secondary">Keep aux ≈ 1–2% of main loss</td>
               </tr>
-              <tr>
+              <tr class="hover:bg-dark-bg/30 transition">
                 <td class="px-6 py-4 text-sm font-mono">router_temperature</td>
                 <td class="px-6 py-4 text-sm">0.5 – 2.0</td>
                 <td class="px-6 py-4 text-sm text-text-secondary">&lt;1 sharper routing, &gt;1 smoother</td>
               </tr>
-              <tr>
+              <tr class="hover:bg-dark-bg/30 transition">
                 <td class="px-6 py-4 text-sm font-mono">use_gradient_checkpointing</td>
                 <td class="px-6 py-4 text-sm">true (large models)</td>
                 <td class="px-6 py-4 text-sm text-text-secondary">Reduce memory in collab fusion</td>
               </tr>
-              <tr>
+              <tr class="hover:bg-dark-bg/30 transition">
                 <td class="px-6 py-4 text-sm font-mono">enable_expert_parallelism</td>
                 <td class="px-6 py-4 text-sm">true</td>
                 <td class="px-6 py-4 text-sm text-text-secondary">Maximize throughput on GPUs</td>
@@ -544,25 +696,27 @@ loss = main_loss + aux_loss * aux_loss_weight</code></pre>
           </table>
         </div>
       </div>
-
+      <div class="section-divider"></div>
     </div>
   </section>
-
+  
   <!-- Quickstart -->
   <section id="quickstart" class="py-20">
     <div class="max-w-7xl mx-auto px-6">
-      <h2 class="text-3xl md:text-4xl font-mono font-bold fade-in">Quickstart</h2>
-      <div class="accent-line fade-in"></div>
-
-      <div class="grid md:grid-cols-2 gap-8 mt-10">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-mono font-bold fade-in">Quickstart</h2>
+        <div class="accent-line mx-auto fade-in"></div>
+      </div>
+      <div class="grid md:grid-cols-2 gap-8">
         <div class="fade-in">
-          <h3 class="text-xl font-semibold mb-2">Minimal usage (dummy forward)</h3>
+          <h3 class="text-xl font-semibold mb-4 flex items-center">
+            <i class="fas fa-code mr-3 text-accent-blue"></i> Minimal usage (dummy forward)
+          </h3>
           <div class="code-block">
             <div class="code-title">Python</div>
-            <button class="copy-btn" title="Copy">Copy</button>
+            <button class="copy-btn" title="Copy"><i class="fas fa-copy"></i></button>
 <pre><code>import torch
 from model_moe import LunarisCodex, LunarisCodexConfig
-
 # Configure a small MoC
 cfg = LunarisCodexConfig(
     d_model=512, n_layers=6, n_heads=8, n_kv_heads=8,
@@ -570,7 +724,6 @@ cfg = LunarisCodexConfig(
     n_experts=8, top_k=2, aux_loss_weight=0.1, router_temperature=1.0,
     use_gradient_checkpointing=False, enable_expert_parallelism=True
 )
-
 model = LunarisCodex(cfg)
 idx = torch.randint(0, cfg.vocab_size, (2, 32))  # (B, T)
 logits, loss_tuple, past = model(idx, targets=idx.clone())
@@ -579,11 +732,12 @@ if loss_tuple:
     total, main, aux = loss_tuple
     print('losses:', total.item(), main.item(), aux.item())</code></pre>
           </div>
-
-          <h3 class="text-xl font-semibold mt-8 mb-2">Training config (example)</h3>
+          <h3 class="text-xl font-semibold mt-8 mb-4 flex items-center">
+            <i class="fas fa-file-code mr-3 text-accent-green"></i> Training config (example)
+          </h3>
           <div class="code-block">
             <div class="code-title">config_moc.yaml</div>
-            <button class="copy-btn" title="Copy">Copy</button>
+            <button class="copy-btn" title="Copy"><i class="fas fa-copy"></i></button>
 <pre><code>model:
   d_model: 768
   n_layers: 12
@@ -595,7 +749,6 @@ if loss_tuple:
   top_k: 2
   aux_loss_weight: 0.1
   router_temperature: 1.0
-
 data_dir: "data/"
 out_dir: "checkpoints/lunaris-moc-8e-2k"
 learning_rate: 3.0e-4
@@ -606,108 +759,157 @@ wandb_project: "lunaris-codex-moc"
 wandb_run_name: "moc-8-experts-2-topk"</code></pre>
           </div>
         </div>
-
         <div class="fade-in">
-          <h3 class="text-xl font-semibold mb-2">Run training</h3>
+          <h3 class="text-xl font-semibold mb-4 flex items-center">
+            <i class="fas fa-terminal mr-3 text-accent-purple"></i> Run training
+          </h3>
           <div class="code-block">
             <div class="code-title">Shell</div>
-            <button class="copy-btn" title="Copy">Copy</button>
+            <button class="copy-btn" title="Copy"><i class="fas fa-copy"></i></button>
 <pre><code>python train_moe.py config_moc.yaml</code></pre>
           </div>
-
-          <h3 class="text-xl font-semibold mt-8 mb-2">Monitoring</h3>
-          <ul class="text-text-secondary text-sm space-y-2">
-            <li><span class="pill mr-2">loss/main</span> Should decrease steadily</li>
-            <li><span class="pill mr-2">loss/aux</span> ≈ 1–2% of main loss (stable)</li>
-            <li><span class="pill mr-2">perplexity</span> Improves over time</li>
-            <li><span class="pill mr-2">expert usage variance</span> Low and uniform</li>
-          </ul>
-
-          <h3 class="text-xl font-semibold mt-8 mb-2">Common fixes</h3>
-          <ul class="text-text-secondary text-sm space-y-2">
-            <li>Aux spikes → lower LR or add warmup</li>
-            <li>Experts unused → lower router_temperature</li>
-            <li>Instability → gradient clip / lower LR</li>
-            <li>Overfitting → reduce n_experts/top_k or add dropout</li>
-          </ul>
+          <h3 class="text-xl font-semibold mt-8 mb-4 flex items-center">
+            <i class="fas fa-chart-line mr-3 text-accent-orange"></i> Monitoring
+          </h3>
+          <div class="bg-dark-card/60 border border-white/5 rounded-xl p-5 mb-6">
+            <ul class="text-text-secondary text-sm space-y-3">
+              <li class="flex items-center">
+                <span class="pill mr-3 bg-dark-bg/40"><i class="fas fa-chart-area mr-1"></i> loss/main</span>
+                <span>Should decrease steadily</span>
+              </li>
+              <li class="flex items-center">
+                <span class="pill mr-3 bg-dark-bg/40"><i class="fas fa-chart-area mr-1"></i> loss/aux</span>
+                <span>≈ 1–2% of main loss (stable)</span>
+              </li>
+              <li class="flex items-center">
+                <span class="pill mr-3 bg-dark-bg/40"><i class="fas fa-chart-area mr-1"></i> perplexity</span>
+                <span>Improves over time</span>
+              </li>
+              <li class="flex items-center">
+                <span class="pill mr-3 bg-dark-bg/40"><i class="fas fa-chart-area mr-1"></i> expert usage variance</span>
+                <span>Low and uniform</span>
+              </li>
+            </ul>
+          </div>
+          <h3 class="text-xl font-semibold mb-4 flex items-center">
+            <i class="fas fa-tools mr-3 text-accent-blue"></i> Common fixes
+          </h3>
+          <div class="bg-dark-card/60 border border-white/5 rounded-xl p-5">
+            <ul class="text-text-secondary text-sm space-y-3">
+              <li class="flex items-start">
+                <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-2"></i>
+                <span>Aux spikes → lower LR or add warmup</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-2"></i>
+                <span>Experts unused → lower router_temperature</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-2"></i>
+                <span>Instability → gradient clip / lower LR</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-2"></i>
+                <span>Overfitting → reduce n_experts/top_k or add dropout</span>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
+      <div class="section-divider"></div>
     </div>
   </section>
-
+  
   <!-- FAQ -->
   <section id="faq" class="py-20 bg-dark-elev/60">
     <div class="max-w-7xl mx-auto px-6">
-      <h2 class="text-3xl md:text-4xl font-mono font-bold fade-in">FAQ</h2>
-      <div class="accent-line fade-in"></div>
-
-      <div class="grid md:grid-cols-2 gap-8 mt-10">
-        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
-          <h3 class="text-lg font-semibold mb-2">How does MoC differ from MoE?</h3>
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-mono font-bold fade-in">FAQ</h2>
+        <div class="accent-line mx-auto fade-in"></div>
+      </div>
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in card-hover">
+          <h3 class="text-lg font-semibold mb-3 flex items-center">
+            <i class="fas fa-question-circle mr-2 text-accent-blue"></i> How does MoC differ from MoE?
+          </h3>
           <p class="text-text-secondary text-sm">
             MoE routes tokens to k experts and sums their outputs. MoC adds two steps:
             router contextualization (self-attn over all expert outputs) and collaborative fusion (cross-attn among selected experts).
           </p>
         </div>
-        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
-          <h3 class="text-lg font-semibold mb-2">Is compute higher than MoE?</h3>
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in card-hover">
+          <h3 class="text-lg font-semibold mb-3 flex items-center">
+            <i class="fas fa-question-circle mr-2 text-accent-blue"></i> Is compute higher than MoE?
+          </h3>
           <p class="text-text-secondary text-sm">
             Yes, training compute increases since all experts pre-analyze tokens. This trade-off aims for richer collaboration and better specialization.
           </p>
         </div>
-        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
-          <h3 class="text-lg font-semibold mb-2">Does it support generation with kv-cache?</h3>
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in card-hover">
+          <h3 class="text-lg font-semibold mb-3 flex items-center">
+            <i class="fas fa-question-circle mr-2 text-accent-blue"></i> Does it support generation with kv-cache?
+          </h3>
           <p class="text-text-secondary text-sm">
             Yes. The LunarisCodex model includes past_key_values handling and a generate() method for efficient incremental decoding.
           </p>
         </div>
-        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in">
-          <h3 class="text-lg font-semibold mb-2">Can I disable MoC and use standard FFN?</h3>
+        <div class="bg-dark-card/60 border border-white/5 rounded-xl p-6 fade-in card-hover">
+          <h3 class="text-lg font-semibold mb-3 flex items-center">
+            <i class="fas fa-question-circle mr-2 text-accent-blue"></i> Can I disable MoC and use standard FFN?
+          </h3>
           <p class="text-text-secondary text-sm">
             Set n_experts to 0 or None in config to use a standard FeedForward module inside each block.
           </p>
         </div>
       </div>
+      <div class="section-divider"></div>
     </div>
   </section>
-
+  
   <!-- Code / Repository -->
   <section id="code" class="py-20">
     <div class="max-w-7xl mx-auto px-6 text-center">
       <h2 class="text-3xl md:text-4xl font-mono font-bold fade-in">Source Code & Repository</h2>
       <div class="accent-line mx-auto fade-in"></div>
-
       <div class="max-w-2xl mx-auto mt-10 fade-in">
-        <p class="text-lg text-text-secondary">
+        <p class="text-lg text-text-secondary mb-8">
           Explore the full implementation, including the CollaborativeExpertsModule,
           optimized expert layer, training utilities, and examples.
         </p>
-        <div class="flex items-center justify-center gap-3 mt-8">
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
           <a href="https://github.com/MeryylleA/lunariscodex-MoC" target="_blank"
-             class="bg-accent-blue text-white font-semibold px-6 py-3 rounded-lg hover:opacity-90 transition glow">
-            View Repository
+             class="bg-accent-blue text-white font-semibold px-7 py-3.5 rounded-lg hover:opacity-90 transition glow flex items-center gap-2">
+            <i class="fab fa-github"></i> View Repository
           </a>
           <a href="https://github.com/MeryylleA/lunariscodex-MoC" target="_blank"
-             class="px-6 py-3 rounded-lg border border-white/10 text-text-secondary hover:text-accent-green hover:border-accent-green transition">
-            github.com/MeryylleA/lunariscodex-MoC
+             class="px-7 py-3.5 rounded-lg border border-white/10 text-text-secondary hover:text-accent-green hover:border-accent-green transition flex items-center gap-2">
+            <i class="fas fa-external-link-alt"></i> github.com/MeryylleA/lunariscodex-MoC
           </a>
         </div>
       </div>
     </div>
   </section>
-
+  
   <!-- Footer -->
   <footer class="py-10 border-t border-white/5">
     <div class="max-w-7xl mx-auto px-6 text-center">
-      <div class="text-sm text-text-secondary">
+      <div class="text-sm text-text-secondary mb-2">
         A project by
-        <a href="https://www.linkedin.com/in/francisco-antonio-0434aa284/" target="_blank" class="underline hover:text-accent-blue">Francisco</a>.
+        <a href="https://www.linkedin.com/in/francisco-antonio-0434aa284/" target="_blank" class="underline hover:text-accent-blue transition">Francisco</a>.
         Built around a Mixture of Collaborative Experts for Llama-style LMs.
       </div>
-      <div class="text-xs text-muted mt-2">© 2025 LunarisCodex-MoC. All rights reserved.</div>
+      <div class="flex justify-center space-x-4 mt-4">
+        <a href="https://github.com/MeryylleA/lunariscodex-MoC" target="_blank" class="text-muted hover:text-accent-blue transition">
+          <i class="fab fa-github text-xl"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/francisco-antonio-0434aa284/" target="_blank" class="text-muted hover:text-accent-blue transition">
+          <i class="fab fa-linkedin text-xl"></i>
+        </a>
+      </div>
+      <div class="text-xs text-muted mt-4">© 2025 LunarisCodex-MoC. All rights reserved.</div>
     </div>
   </footer>
-
+  
   <!-- Scripts -->
   <script>
     // Mobile menu
@@ -715,13 +917,31 @@ wandb_run_name: "moc-8-experts-2-topk"</code></pre>
     const mobileMenu = document.getElementById('mobile-menu');
     mobileMenuButton?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
     mobileMenu?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.add('hidden')));
-
+    
     // Fade-in on scroll
     const observer = new IntersectionObserver(entries => {
       entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
     }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-
+    
+    // Tab functionality
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const tabId = button.getAttribute('data-tab');
+        
+        // Deactivate all tabs and buttons
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        tabContents.forEach(content => content.classList.add('hidden'));
+        
+        // Activate selected tab and button
+        button.classList.add('active');
+        document.getElementById(tabId).classList.remove('hidden');
+      });
+    });
+    
     // Copy buttons
     function attachCopyHandlers() {
       document.querySelectorAll('.code-block').forEach(block => {
@@ -731,17 +951,31 @@ wandb_run_name: "moc-8-experts-2-topk"</code></pre>
           const code = block.querySelector('pre')?.innerText || '';
           try {
             await navigator.clipboard.writeText(code);
-            const old = btn.textContent;
-            btn.textContent = 'Copied';
-            setTimeout(() => btn.textContent = old, 1200);
+            const oldHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Copied';
+            setTimeout(() => btn.innerHTML = oldHTML, 2000);
           } catch {
-            btn.textContent = 'Failed';
-            setTimeout(() => btn.textContent = 'Copy', 1200);
+            btn.innerHTML = '<i class="fas fa-times"></i> Failed';
+            setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i>', 2000);
           }
         });
       });
     }
     attachCopyHandlers();
+    
+    // Add smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          window.scrollTo({
+            top: target.offsetTop - 80,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
   </script>
 </body>
 </html>
